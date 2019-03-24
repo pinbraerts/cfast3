@@ -18,6 +18,20 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BlockRule.hpp" />
+    <ClInclude Include="Error.hpp" />
+    <ClInclude Include="ImplicitRules.hpp" />
+    <ClInclude Include="includes.hpp" />
+    <ClInclude Include="Parser.hpp" />
+    <ClInclude Include="Rule.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="input.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{A48CD196-8884-41FA-8E3D-8989F9736F54}</ProjectGuid>
@@ -122,20 +136,6 @@
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\BlockRule.hpp" />
-    <ClInclude Include="..\ImplicitRules.hpp" />
-    <ClInclude Include="..\includes.hpp" />
-    <ClInclude Include="..\Lexer.hpp" />
-    <ClInclude Include="..\Parser.hpp" />
-    <ClInclude Include="..\Rule.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\input.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\main.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
