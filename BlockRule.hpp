@@ -21,7 +21,7 @@ struct BlockRule : Rule {
 		separator(std::move(_separator)),
 		item(std::move(_item)) {}
 
-	Parser& apply(Parser& p) override {
+	ErrorProcessor& apply(Parser& p) override {
 		p >> start;
 		while (!bool(p >> end)) {
 			p >> item;

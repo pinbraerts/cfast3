@@ -6,12 +6,12 @@ RulePtr str_literal(
 	RulePtr&& start = '"',
 	RulePtr&& end = '"'
 ) {
-	return block(std::move(start), std::move(end), true, [&](Parser& p) -> Parser& {
+	return block(std::move(start), std::move(end), true, [&](Parser& p) -> ErrorProcessor& {
 		char c = p.stream.get();
 		if (c == '\\')
 			c = p.stream.get();
 		if (c == EOF)
-			return p << Parser::eof;
+			return p << Code::eof;
 		dest += (char)c;
 		return p;
 	});
@@ -28,7 +28,7 @@ int main() {
 			return p;
 		});
 	}
-	catch (const Parser::Error& e) {
+	catch (const Error& e) {
 		std::cerr << e.message << std::endl;
 		return e.retcode();
 	}

@@ -8,13 +8,13 @@ struct CharRule : Rule {
 
 	CharRule(char _c) noexcept : c(_c) {}
 
-	Parser& apply(Parser& p) override {
+	ErrorProcessor& apply(Parser& p) override {
 		if (!isspace(unsigned char(c))) {
 			p.stream >> std::ws;
 		}
 		const int x = p.stream.peek();
 		if (x == EOF)
-			return p << Parser::eof;
+			return p << Code::eof;
 		else if (x == c) {
 			p.stream.get();
 			return p;
@@ -29,7 +29,7 @@ struct FuncRule : Rule {
 
 	FuncRule(T&& _t) noexcept : t(_t) {}
 
-	Parser& apply(Parser& p) override {
+	ErrorProcessor& apply(Parser& p) override {
 		return t(p);
 	}
 };
@@ -40,7 +40,7 @@ struct ReaderRule : Rule {
 
 	ReaderRule(T& _dest) : dest(_dest) {}
 
-	Parser& apply(Parser& p) override {
+	ErrorProcessor& apply(Parser& p) override {
 		p.stream >> dest;
 		return p << (p.stream.operator bool() && !dest.empty());
 	}
@@ -51,7 +51,7 @@ struct BoolRule : Rule {
 
 	BoolRule(bool _val): val(_val) {}
 
-	Parser& apply(Parser& p) override {
+	ErrorProcessor& apply(Parser& p) override {
 		return p << val << "Bool Rule";
 	}
 };

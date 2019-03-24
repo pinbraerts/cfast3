@@ -4,9 +4,7 @@
 #include "includes.hpp"
 
 struct Rule {
-	virtual Parser& apply(Parser& p) {
-		return p;
-	}
+	virtual ErrorProcessor& apply(Parser& p) = 0;
 
 	virtual ~Rule() {}
 };

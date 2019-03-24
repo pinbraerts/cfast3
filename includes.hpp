@@ -10,6 +10,7 @@
 using namespace std::string_literals;
 
 class Parser;
+struct ErrorProcessor;
 struct Rule;
 struct RulePtr;
 
