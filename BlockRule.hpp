@@ -1,27 +1,32 @@
 #ifndef CFAST_BLOCK_RULE_HPP
 #define CFAST_BLOCK_RULE_HPP
 
-#include "Parser.hpp"
+#include "Rule.hpp"
 
-struct BlockRule : Rule {
-	RulePtr
-		start,
-		end,
-		separator,
-		item;
+template<
+	class Start,
+	class End,
+	class Separator,
+	class Item
+>
+struct BlockRule {
+	Start start;
+	End end;
+	Separator separator;
+	Item item;
 
 	BlockRule(
-		RulePtr&& _start,
-		RulePtr&& _end,
-		RulePtr&& _separator,
-		RulePtr&& _item
+		Start&& _start,
+		End&& _end,
+		Separator&& _separator,
+		Item&& _item
 	) noexcept :
-		start(std::move(_start)),
-		end(std::move(_end)),
-		separator(std::move(_separator)),
-		item(std::move(_item)) {}
+		start(rule_move(_start)),
+		end(rule_move(_end)),
+		separator(rule_move(_separator)),
+		item(rule_move(_item)) {}
 
-	ErrorProcessor& apply(Parser& p) override {
+	ErrorProcessor& operator()(Parser& p) {
 		p >> start;
 		while (!bool(p >> end)) {
 			p >> item;
@@ -34,25 +39,42 @@ struct BlockRule : Rule {
 	}
 };
 
-inline RulePtr block(
-	RulePtr&& start,
-	RulePtr&& end,
-	RulePtr&& separator,
-	RulePtr&& item
+template<
+	class Start,
+	class End,
+	class Separator,
+	class Item
+>
+inline auto block(
+	Start&& start,
+	End&& end,
+	Separator&& separator,
+	Item&& item
 ) {
-	return std::make_unique<BlockRule>(
-		std::move(start),
-		std::move(end),
-		std::move(separator),
-		std::move(item)
+	return BlockRule<Start, End, Separator, Item>(
+		rule_move(start),
+		rule_move(end),
+		rule_move(separator),
+		rule_move(item)
 	);
 }
 
-inline RulePtr block(
+template<class Item>
+inline auto block(
 	const char(&start_sep_end)[4],  // example: "{,}"
-	RulePtr&& item
+	Item&& item
 ) {
-	return std::make_unique<BlockRule>(start_sep_end[0], start_sep_end[2], start_sep_end[1], std::move(item));
+	return BlockRule<
+		decltype(rule_cast('{')),
+		decltype(rule_cast(',')),
+		decltype(rule_cast('}')),
+		Item
+	>(
+		rule_cast(start_sep_end[0]),
+		rule_cast(start_sep_end[2]),
+		rule_cast(start_sep_end[1]),
+		rule_move(item)
+	);
 }
 
 

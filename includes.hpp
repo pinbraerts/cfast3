@@ -11,7 +11,11 @@ using namespace std::string_literals;
 
 class Parser;
 struct ErrorProcessor;
-struct Rule;
-struct RulePtr;
+
+template<class T>
+auto rule_move(T&& t);
+
+template<class T>
+auto rule_cast(T t);
 
 #endif // !CFAST_INCLUDES_HPP

@@ -1,0 +1,9 @@
+$ Point
+	Float x
+	Float y
+
+v = Point
+	x = 4
+	y = 5
+
+a, b = v
