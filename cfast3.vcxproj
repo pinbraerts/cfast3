@@ -19,14 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="input.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="example.fc" />
-    <None Include="example.out" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes.hpp" />

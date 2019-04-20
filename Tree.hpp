@@ -126,6 +126,31 @@ struct Tree {
 		}
 		pool[position].children.end() = pool.size();
 	}
+
+	void save_binary(std::ostream& stream, const char* buffer) {
+		size_t offs = (size_t)buffer;
+		write(stream, pool.size());
+		for (auto node : pool) {
+			node.begin().ptr() -= offs;
+			node.end().ptr() -= offs;
+			write(stream, node);
+		}
+	}
+
+	void load_binary(std::istream& stream, const char* buffer) {
+		size_t offs = (size_t)buffer;
+		_last = 0;
+		pool.clear();
+		size_t s;
+		read(stream, s);
+		pool.reserve(s);
+		pool.resize(s);
+		read(stream, root(), s);
+		for (auto& node : pool) {
+			node.begin().ptr() += offs;
+			node.end().ptr() += offs;
+		}
+	}
 };
 
 template<class T>

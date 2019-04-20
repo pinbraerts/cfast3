@@ -73,7 +73,6 @@ struct Parser {
 	}
 	
 	void parseBody() {
-		std::cout << tree << std::endl;
 		skip_spaces_and_lines();
 
 		switch (iter->type) {
@@ -97,7 +96,7 @@ struct Parser {
 		case Token::Space: case Token::Container: default:
 			throw Error("unexpected token type: "s + Token::type2str(iter->type));
 		case Token::Error:
-			throw Error(std::string(&iter->begin().chr(), &iter->end().chr()));
+			throw Error(std::string(iter->begin().ptr(), iter->end().ptr()));
 		}
 	}
 

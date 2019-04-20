@@ -11,8 +11,9 @@ struct SyntaxNode: Token {
 
 	SyntaxNode(TreePtr _parent, const Token& tok) : Token(tok), parent(_parent) {}
 	SyntaxNode(TreePtr _parent, Token::Type t) : Token(t), parent(_parent) {}
-	//Node(TreePtr _parent, Token::Type t, Lexer::Iter beg) : Token(t), parent(_parent), children(beg, beg) {}
-	//Node(TreePtr _parent, Token::Type t, Lexer::Iter beg, Lexer::Iter en) : Token(t), parent(_parent), children(beg, en) {}
+	SyntaxNode() : Token(Token::Error) {} // for vector
+	// Node(TreePtr _parent, Token::Type t, Lexer::Iter beg) : Token(t), parent(_parent), children(beg, beg) {}
+	// Node(TreePtr _parent, Token::Type t, Lexer::Iter beg, Lexer::Iter en) : Token(t), parent(_parent), children(beg, en) {}
 
 	bool is_root() const {
 		return parent == 0;
@@ -21,6 +22,13 @@ struct SyntaxNode: Token {
 	SyntaxNode& operator=(Token& other) {
 		Token::operator=(other);
 		return *this;
+	}
+
+	void save_binary(std::ostream& stream) {
+		write(stream, *this);
+	}
+	void load_binary(std::istream& stream) {
+		read(stream, *this);
 	}
 };
 

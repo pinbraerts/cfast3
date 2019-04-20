@@ -51,7 +51,7 @@ public:
 
 	const char_type* c_str() const {
 		if constexpr(std::is_same_v<T, char_type> && std::is_same_v<Iter, TextPosition>)
-			return &_begin.chr();
+			return _begin.ptr();
 		else return nullptr;
 	}
 
@@ -104,6 +104,13 @@ public:
 			else if (*i == *j) return false;
 
 		return true;
+	}
+
+	void save_binary(std::ostream& stream) {
+		write(stream, *this);
+	}
+	void read_binary(std::istream& stream) {
+		read(stream, *this);
 	}
 };
 
@@ -163,6 +170,19 @@ public:
 	}
 	const char_type& chr() {
 		return *_ptr;
+	}
+	const char_type* const& ptr() const {
+		return _ptr;
+	}
+	const char_type*& ptr() {
+		return _ptr;
+	}
+
+	void save_binary(std::ostream& stream) {
+		write(stream, *this);
+	}
+	void read_binary(std::istream& stream) {
+		read(stream, *this);
 	}
 };
 
