@@ -73,7 +73,7 @@ struct Tree {
 		return ins;
 	}
 	void swap_children(TreePtr a, TreePtr b) {
-		Node& x = pool[a], &y = pool[b];
+		SyntaxNode& x = pool[a], &y = pool[b];
 		for (TreePtr i = x.children.begin(); i < x.children.end(); ++i)
 			pool[i].parent = b;
 		for (TreePtr i = y.children.begin(); i < y.children.end(); ++i)

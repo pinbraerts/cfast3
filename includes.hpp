@@ -30,9 +30,9 @@ using TreePtr = size_t;
 template<class T>
 struct Tree;
 
-struct Node;
+struct SyntaxNode;
 
-using Children = WeakSpan<Node, TreePtr>;
+using Children = WeakSpan<SyntaxNode, TreePtr>;
 struct Parser;
 
 } // namespace cf
