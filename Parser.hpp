@@ -8,10 +8,10 @@
 namespace cf {
 
 struct Parser {
-	Tree<SyntaxNode>& tree;
+	SyntaxTree& tree;
 	Lexer::Iter iter;
 
-	Parser(Tree<SyntaxNode>& _tree, Lexer& lexer): tree(_tree), iter(lexer.begin()) {
+	Parser(SyntaxTree& _tree, Lexer& lexer): tree(_tree), iter(lexer.begin()) {
 		tree.push_child(Token::Container); // root
 	}
 

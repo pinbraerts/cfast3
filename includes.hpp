@@ -31,9 +31,19 @@ template<class T>
 struct Tree;
 
 struct SyntaxNode;
-
 using Children = WeakSpan<SyntaxNode, TreePtr>;
+using SyntaxTree = Tree<SyntaxNode>;
+
 struct Parser;
+
+template<class T>
+void write(std::ostream& stream, const T& x, size_t n = 1) {
+	stream.write(reinterpret_cast<const char*>(&x), sizeof(x) * n);
+}
+template<class T>
+void read(std::istream& stream, T& x, size_t n = 1) {
+	stream.read(reinterpret_cast<char*>(&x), sizeof(x) * n);
+}
 
 } // namespace cf
 
