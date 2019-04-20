@@ -56,7 +56,7 @@ struct Parser {
 		tree.push_child(Token::Quote); // closure
 
 		tree.select(body); // === tree.down(), tree.next()
-		tree.last().begin() = iter->end() + 1;
+		tree.last().begin() = iter->end();
 		for (++iter; iter->type != Token::End &&
 			(iter->type != Token::Quote || *iter != opening); ++iter)
 			if (iter->type == Token::SingleOperator && iter->begin().chr() == '\\')
@@ -73,30 +73,33 @@ struct Parser {
 	}
 	
 	void parseBody() {
-		skip_spaces_and_lines();
+		while (true) {
+			skip_spaces_and_lines();
 
-		switch (iter->type) {
-		case Token::End: throw Error::ok();
-		case Token::Line:
-			break;
-		case Token::Operator:
-			break;
-		case Token::SingleOperator:
-			break;
-		case Token::String:
-			break;
-		case Token::Quote:
-			parseQuote();
-			break;
-		case Token::OpenBrace:
-			parseBraces();
-			break;
-		case Token::CloseBrace:
-			return;
-		case Token::Space: case Token::Container: default:
-			throw Error("unexpected token type: "s + Token::type2str(iter->type));
-		case Token::Error:
-			throw Error(std::string(iter->begin().ptr(), iter->end().ptr()));
+			switch (iter->type) {
+			case Token::End: throw Error::ok();
+			case Token::Operator:
+				// TODO
+				break;
+			case Token::SingleOperator:
+				// TODO
+				break;
+			case Token::String:
+				parseString();
+				break;
+			case Token::Quote:
+				parseQuote();
+				break;
+			case Token::OpenBrace:
+				parseBraces();
+				break;
+			case Token::CloseBrace: return;
+			case Token::Line: case Token::Space:
+			case Token::Container: default:
+				throw Error("unexpected token type: "s + Token::type2str(iter->type));
+			case Token::Error:
+				throw Error(std::string(iter->begin().ptr(), iter->end().ptr()));
+			}
 		}
 	}
 
@@ -108,6 +111,13 @@ struct Parser {
 			return e;
 		}
 		return Error::ok();
+	}
+
+	void parseString() {
+		tree.push_child(*iter);
+		deep_spaces();
+		++iter;
+		tree.up();
 	}
 
 	void parseBraces() {
