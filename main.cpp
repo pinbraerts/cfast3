@@ -122,7 +122,6 @@ struct Parser {
 		case Token::Error:
 			throw Error(std::string(&iter->begin().chr(), &iter->end().chr()));
 		}
-		tree.up();
 	}
 
 	Error parse(void(Parser::*f)() = &Parser::parseBody) {
