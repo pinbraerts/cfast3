@@ -19,15 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BlockRule.hpp" />
-    <ClInclude Include="Error.hpp" />
-    <ClInclude Include="Function.hpp" />
-    <ClInclude Include="includes.hpp" />
-    <ClInclude Include="Parser.hpp" />
-    <ClInclude Include="Rule.hpp" />
-    <ClInclude Include="StringRule.hpp" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="input.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -36,6 +27,13 @@
   <ItemGroup>
     <None Include="example.fc" />
     <None Include="example.out" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="includes.hpp" />
+    <ClInclude Include="Lexer.hpp" />
+    <ClInclude Include="Source.hpp" />
+    <ClInclude Include="Token.hpp" />
+    <ClInclude Include="Tree.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
