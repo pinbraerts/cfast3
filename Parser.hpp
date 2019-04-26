@@ -31,29 +31,23 @@ struct Parser {
 	};
 
 	void skip_spaces() {
-		for (; iter->type != Token::End && iter->type == Token::Space; ++iter)
+		for (; iter->type != Token::End && iter->type == Token::Space; ++iter) {
 			tree.push_child(*iter);
+			tree[tree.last().parent].working_area.begin() += 1;
+		}
 	}
 
 	void skip_spaces_and_lines() {
-		for (; iter->type != Token::End && (iter->type == Token::Space || iter->type == Token::Line); ++iter)
+		for (; iter->type != Token::End && (iter->type == Token::Space || iter->type == Token::Line); ++iter) {
 			tree.push_child(*iter);
-	}
-
-	void deep_spaces() {
-		TreePtr pchild = tree.last().children.end() - 1;
-		SyntaxNode& child = tree.pool[pchild];
-		child.children.begin() = pchild;
-		child.children.end() = pchild + 1;
-		tree.swap_children(tree.last_position(), pchild);
-		child.children.end() -= 1;
+			tree[tree.last().parent].working_area.begin() += 1;
+		}
 	}
 
 	void parseQuote() {
+		tree.last() = Token(Token::Quote);
 		Source opening = tree.push_child(*iter); // opening
-		deep_spaces();
 		TreePtr body = tree | tree.push_child(Token::String); // body
-		tree.push_child(Token::Quote); // closure
 
 		tree.select(body); // === tree.down(), tree.next()
 		tree.last().begin() = iter->end();
@@ -65,19 +59,25 @@ struct Parser {
 			throw Error("quote is not closed");
 
 		tree.last().end() = iter->begin();
-		tree.next();
+
+		tree.up();
+		tree.push_child_and_select(Token::Quote); // closure
 		tree.last() = *iter;
+		tree.up();
+		tree.up();
 
 		++iter;
-		tree.up();
 	}
 	
 	void parseBody() {
 		while (true) {
+			tree.push_child_and_select(Token::Space); // reserve
 			skip_spaces_and_lines();
 
 			switch (iter->type) {
-			case Token::End: throw Error::ok();
+			case Token::End:
+				tree.last() = Token(Token::End);
+				throw Error::ok();
 			case Token::Operator:
 				// TODO
 				break;
@@ -93,7 +93,9 @@ struct Parser {
 			case Token::OpenBrace:
 				parseBraces();
 				break;
-			case Token::CloseBrace: return;
+			case Token::CloseBrace:
+				tree.move_up();
+				return;
 			case Token::Line: case Token::Space:
 			case Token::Container: default:
 				throw Error("unexpected token type: "s + Token::type2str(iter->type));
@@ -114,28 +116,25 @@ struct Parser {
 	}
 
 	void parseString() {
-		tree.push_child(*iter);
-		deep_spaces();
+		tree.last() = *iter;
 		++iter;
 		tree.up();
 	}
 
 	void parseBraces() {
+		tree.last() = Token(Token::OpenBrace);
 		Source opening = tree.push_child(*iter); // opening
-		deep_spaces();
-		TreePtr body = tree | tree.push_child(Token::Container); // body
-		tree.push_child(Token::CloseBrace); // closure
 
-		tree.select(body); // === tree.down(), tree.next()
 		++iter;
+		tree.push_child_and_select(Token::OpenBrace);
 		parseBody();
-
-		tree.next(); // select closure
-		skip_spaces();
+		//tree.up();
 		if (iter->type != Token::CloseBrace) // add open/close check
 			throw Error("braces is not closed");
+
 		tree.last() = *iter;
 		++iter;
+		tree.up();
 		tree.up();
 	}
 };
