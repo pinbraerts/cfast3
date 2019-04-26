@@ -84,13 +84,13 @@ struct Token: Source {
 	void save_binary(std::ostream& stream) {
 		write(stream, *this);
 	}
-	void read_binary(std::istream& stream) {
+	void load_binary(std::istream& stream) {
 		read(stream, *this);
 	}
 };
 
 std::ostream& operator<<(std::ostream& stream, const Token& token) {
-	return (stream << Token::type2str(token.type) << " \'").write(token.c_str(), token.size()) << '\'';
+	return (stream << Token::type2str(token.type) << " \'").write(token.begin().ptr(), token.size()) << '\'';
 }
 
 } // namespace cf
