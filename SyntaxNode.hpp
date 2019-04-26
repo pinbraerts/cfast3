@@ -7,7 +7,7 @@ namespace cf {
 
 struct SyntaxNode: Token {
 	TreePtr parent;
-	Working working_area; // except spaces
+	size_t first_no_space = 0;
 	Children children;
 
 	SyntaxNode(TreePtr _parent, const Token& tok) : Token(tok), parent(_parent) {}
@@ -21,7 +21,7 @@ struct SyntaxNode: Token {
 	}
 
 	auto working() {
-		return WeakSlice(children, working_area);
+		return WeakSlice(children, first_no_space);
 	}
 
 	SyntaxNode& operator=(const Token& other) {
@@ -31,12 +31,12 @@ struct SyntaxNode: Token {
 
 	void save_binary(std::ostream& stream) {
 		Token::save_binary(stream);
-		write(stream, working_area);
+		write(stream, first_no_space);
 		write(stream, children);
 	}
 	void load_binary(std::istream& stream) {
 		Token::load_binary(stream);
-		read(stream, working_area);
+		read(stream, first_no_space);
 		read(stream, children);
 	}
 };

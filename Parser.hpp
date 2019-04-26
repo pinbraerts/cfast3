@@ -33,14 +33,14 @@ struct Parser {
 	void skip_spaces() {
 		for (; iter->type != Token::End && iter->type == Token::Space; ++iter) {
 			tree.push_child(*iter);
-			tree[tree.last().parent].working_area.begin() += 1;
+			tree[tree.last().parent].first_no_space += 1;
 		}
 	}
 
 	void skip_spaces_and_lines() {
 		for (; iter->type != Token::End && (iter->type == Token::Space || iter->type == Token::Line); ++iter) {
 			tree.push_child(*iter);
-			tree[tree.last().parent].working_area.begin() += 1;
+			tree[tree.last().parent].first_no_space += 1;
 		}
 	}
 
