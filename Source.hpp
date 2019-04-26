@@ -5,10 +5,10 @@
 
 namespace cf {
 
-template<class T, class Iter = T*>
+template<class Iter>
 struct WeakSpan {
 private:
-	Iter _begin, _end;
+	Iter _begin = 0, _end = 0;
 
 public:
 	WeakSpan() = default;
@@ -49,12 +49,6 @@ public:
 		return _end = other;
 	}
 
-	const char_type* c_str() const {
-		if constexpr(std::is_same_v<T, char_type> && std::is_same_v<Iter, TextPosition>)
-			return _begin.ptr();
-		else return nullptr;
-	}
-
 	template<class I>
 	WeakSpan& set(I first, I last) {
 		_begin = first;
@@ -62,14 +56,14 @@ public:
 		return *this;
 	}
 	template<class I>
-	WeakSpan& set(I& stub) {
-		if constexpr (std::is_same_v<I, std::string> && std::is_same_v<T, char_type>) {
-			_begin = stub.c_str();
-			_end = _begin + stub.size();
+	WeakSpan& set(I& span) {
+		if constexpr (std::is_same_v<I, std::string>) {
+			_begin = span.c_str();
+			_end = _begin + span.size();
 		}
 		else {
-			_begin = stub.begin();
-			_end = stub.end();
+			_begin = span.begin();
+			_end = span.end();
 		}
 		return *this;
 	}
@@ -109,10 +103,45 @@ public:
 	void save_binary(std::ostream& stream) {
 		write(stream, *this);
 	}
-	void read_binary(std::istream& stream) {
+	void load_binary(std::istream& stream) {
 		read(stream, *this);
 	}
 };
+
+template<class T, class U = size_t>
+class WeakSlice {
+	U _start_offset = 0, _end_offset = 0;
+
+	T& _val;
+
+public:
+	WeakSlice(T& val, U start_offset = 0, U end_offset = 0) :
+		_val(val),
+		_start_offset(start_offset),
+		_end_offset(end_offset) {}
+
+	WeakSlice(T& val, WeakSpan<U> span) :
+		_val(val),
+		_start_offset(span.begin()),
+		_end_offset(span.end()) {}
+
+	auto begin() {
+		return std::advance(_val.begin(), _start_offset);
+	}
+	auto end() {
+		return std::advance(_val.end(), -_end_offset);
+	}
+
+	auto cbegin() const {
+		return std::advance(_val.cbegin(), _start_offset);
+	}
+	auto cend() const {
+		return std::advance(_val.cend(), -_end_offset);
+	}
+};
+
+template<class T, class U = size_t> WeakSlice(T&, U, U) -> WeakSlice<T, U>;
+template<class T, class U> WeakSlice(T&, WeakSpan<U>) -> WeakSlice<T, U>;
 
 struct TextPosition {
 private:
@@ -181,7 +210,7 @@ public:
 	void save_binary(std::ostream& stream) {
 		write(stream, *this);
 	}
-	void read_binary(std::istream& stream) {
+	void load_binary(std::istream& stream) {
 		read(stream, *this);
 	}
 };
