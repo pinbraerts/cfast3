@@ -21,7 +21,7 @@ struct TextPosition;
 template<class Iter>
 struct WeakSpan;
 
-template<class Iter>
+template<class Iter, class U>
 class WeakSlice;
 
 using Source = WeakSpan<TextPosition>;

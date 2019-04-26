@@ -141,6 +141,7 @@ public:
 };
 
 template<class T, class U = size_t> WeakSlice(T&, U, U) -> WeakSlice<T, U>;
+template<class T, class U = size_t> WeakSlice(T&, U) -> WeakSlice<T, U>;
 template<class T, class U> WeakSlice(T&, WeakSpan<U>) -> WeakSlice<T, U>;
 
 struct TextPosition {
