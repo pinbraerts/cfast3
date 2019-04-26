@@ -11,11 +11,17 @@ struct Tree {
 	Pool pool;
 	TreePtr _last = 0;
 
-	T& operator[](size_t index) {
+	T& get(size_t index) {
 		return pool[index];
 	}
-	const T& operator[](size_t index) const {
+	const T& get(size_t index) const {
 		return pool[index];
+	}
+	T& operator[](size_t index) {
+		return get(index);
+	}
+	const T& operator[](size_t index) const {
+		return get(index);
 	}
 
 	T& root() {
@@ -33,34 +39,36 @@ struct Tree {
 
 	template<class... Args>
 	T& push_child(Args&&... args) {
-		if (!pool.empty()) {
-			if (last().children.is_empty()) {
-				last().children.begin() = pool.size();
-				last().children.end() = pool.size() + 1;
-			}
-			else last().children.end() += 1;
-		}
-		return pool.emplace_back(_last, std::forward<Args>(args)...);
+		bool empty = is_empty();
+		T& val = pool.emplace_back(_last, std::forward<Args>(args)...);
+		if (!empty)
+			last().children.push_back(ptr(val));
+		return val;
 	}
 	template<class... Args>
-	T& push_child_and_move(Args&&... args) {
-		if (!pool.empty()) {
-			if (last().children.is_empty()) {
-				last().children.begin() = pool.size();
-				last().children.end() = pool.size() + 1;
-			}
-			else last().children.end() += 1;
-		}
-		T& ret = pool.emplace_back(_last, std::forward<Args>(args)...);
-		_last = pool.size() - 1;
-		return ret;
+	T& push_child_and_select(Args&&... args) {
+		bool empty = is_empty();
+		T& val = pool.emplace_back(_last, std::forward<Args>(args)...);
+		TreePtr _ptr = ptr(val);
+		if(!empty)
+			last().children.push_back(_ptr);
+		select(_ptr);
+		return val;
 	}
 	template<class... Args>
 	T& push_sibling(Args&&... args) {
 		up();
-		return push_child_and_move(std::forward<Args>(args)...);
+		return push_child_and_select(std::forward<Args>(args)...);
 	}
 	template<class... Args>
+	T& move_up() {
+		T& parent = get(last().parent);
+		T& pparent = get(last().parent = parent.parent);
+		pparent.children.push_back(last_position());
+		parent.children.erase(std::remove(parent.children.begin(), parent.children.end(), last_position()));
+		return last();
+	}
+	/*template<class... Args>
 	T& push_parent(Args... args) {
 		TreePtr parent = last().parent;
 		last().parent = _last;
@@ -71,7 +79,7 @@ struct Tree {
 		ins.children.begin() = pool.size() - 1;
 		ins.children.end() = pool.size();
 		return ins;
-	}
+	}*/
 	void swap_children(TreePtr a, TreePtr b) {
 		SyntaxNode& x = pool[a], &y = pool[b];
 		for (TreePtr i = x.children.begin(); i < x.children.end(); ++i)
@@ -86,7 +94,7 @@ struct Tree {
 	}
 
 	TreePtr operator|(const T& x) const {
-		return offs(x);
+		return ptr(x);
 	}
 
 	bool is_empty() const {
@@ -105,11 +113,11 @@ struct Tree {
 	void down() {
 		_last = last().children.begin();
 	}
-	size_t offs(const T& x) const {
+	size_t ptr(const T& x) const {
 		return &x - &root();
 	}
 	void select(const T& x) {
-		_last = offs(x);
+		_last = ptr(x);
 	}
 	void select(TreePtr x) {
 		_last = x;
@@ -118,34 +126,20 @@ struct Tree {
 		return _last;
 	}
 
-	void insert_subtree(TreePtr position, Tree& tree) {
-		TreePtr beg = pool.size();
-		pool.insert(pool.back(), tree.pool.begin() + 1, tree.pool.end());
-		if (pool[position].children.end() != beg) {
-			pool[position].children.begin() = beg;
-		}
-		pool[position].children.end() = pool.size();
-	}
-
 	void save_binary(std::ostream& stream, const char* buffer) {
 		size_t offs = (size_t)buffer;
 		write(stream, pool.size());
 		for (auto node : pool) {
 			node.begin().ptr() -= offs;
 			node.end().ptr() -= offs;
-			write(stream, node);
+			node.save_binary(stream);
 		}
 	}
 
 	void load_binary(std::istream& stream, const char* buffer) {
 		size_t offs = (size_t)buffer;
 		_last = 0;
-		pool.clear();
-		size_t s;
-		read(stream, s);
-		pool.reserve(s);
-		pool.resize(s);
-		read(stream, root(), s);
+		read(stream, pool);
 		for (auto& node : pool) {
 			node.begin().ptr() += offs;
 			node.end().ptr() += offs;
@@ -165,13 +159,13 @@ struct TreePrinter {
 		if (&tree.last() == &t) stream << std::string((depth <= 1 ? 0 : depth - 1) * 4, ' ') << ">>> ";
 		else stream << std::string(depth * 4, ' ');
 		stream << t;
-		if (t.children.is_empty()) {
+		if (t.children.empty()) {
 			stream << std::endl;
 			return;
 		}
 		stream << " [" << std::endl;
 		++depth;
-		for (TreePtr i = t.children.begin(); i < t.children.end(); ++i)
+		for (TreePtr i: t.children)
 			print(tree[i]);
 		--depth;
 		stream << std::string(depth * 4, ' ') << "]" << std::endl;
