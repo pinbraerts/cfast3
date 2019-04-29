@@ -38,11 +38,14 @@ using TreePtr = size_t;
 template<class T>
 struct Tree;
 
+template<class T>
+struct TreePrinter;
+
 struct SyntaxNode;
 using Children = std::vector<TreePtr>;
 using SyntaxTree = Tree<SyntaxNode>;
-using Working = WeakSpan<TreePtr>;
 
+struct Traits;
 struct Parser;
 
 template<class T>
