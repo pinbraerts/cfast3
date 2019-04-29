@@ -7,6 +7,8 @@
 #include <limits>
 #include <set>
 #include <vector>
+#include <map>
+#include <set>
 #include <algorithm>
 
 using namespace std::literals;
@@ -15,6 +17,8 @@ namespace cf {
 
 using char_type = char;
 constexpr char_type line_terminator = '\n';
+
+using priority_t = size_t;
 
 struct TextPosition;
 
