@@ -8,7 +8,7 @@ namespace cf {
 template<class Iter>
 struct WeakSpan {
 private:
-	Iter _begin = 0, _end = 0;
+	Iter _begin = Iter(), _end = Iter();
 
 public:
 	WeakSpan() = default;
@@ -108,41 +108,33 @@ public:
 	}
 };
 
-template<class T, class U = size_t>
-class WeakSlice {
-	U _start_offset = 0, _end_offset = 0;
+template<class Iter> WeakSpan(Iter, Iter) -> WeakSpan<Iter>;
 
-	T& _val;
+template<class T, class Diff = size_t>
+auto slice(T& t, Diff s) {
+	auto it = t.begin();
+	std::advance(it, s);
+	return WeakSpan(it, t.end());
+}
+template<class T, class Diff = size_t>
+auto slice(const T& t, Diff s) {
+	auto it = t.cbegin();
+	std::advance(it, s);
+	return WeakSpan(it, t.end());
+}
 
-public:
-	WeakSlice(T& val, U start_offset = 0, U end_offset = 0) :
-		_val(val),
-		_start_offset(start_offset),
-		_end_offset(end_offset) {}
-
-	WeakSlice(T& val, WeakSpan<U> span) :
-		_val(val),
-		_start_offset(span.begin()),
-		_end_offset(span.end()) {}
-
-	auto begin() {
-		return std::advance(_val.begin(), _start_offset);
-	}
-	auto end() {
-		return std::advance(_val.end(), -_end_offset);
-	}
-
-	auto cbegin() const {
-		return std::advance(_val.cbegin(), _start_offset);
-	}
-	auto cend() const {
-		return std::advance(_val.cend(), -_end_offset);
-	}
-};
-
-template<class T, class U = size_t> WeakSlice(T&, U, U) -> WeakSlice<T, U>;
-template<class T, class U = size_t> WeakSlice(T&, U) -> WeakSlice<T, U>;
-template<class T, class U> WeakSlice(T&, WeakSpan<U>) -> WeakSlice<T, U>;
+template<class T, class Diff = size_t>
+auto slice(T& t, Diff s, Diff e) {
+	auto it = t.begin(), it2 = t.begin();
+	std::advance(it, s); std::advance(it2, e);
+	return WeakSpan(it, it2);
+}
+template<class T, class Diff = size_t>
+auto slice(const T& t, Diff s, Diff e) {
+	auto it = t.cbegin(), it2 = t.cbegin();
+	std::advance(it, s); std::advance(it2, e);
+	return WeakSpan(it, it2);
+}
 
 struct TextPosition {
 private:
@@ -153,6 +145,9 @@ public:
 
 	TextPosition(char_type* ptr = nullptr): _ptr(ptr) {}
 
+	const char& operator[](size_t index) const {
+		return _ptr[index];
+	}
 	TextPosition& operator++() {
 		if (*_ptr == line_terminator) {
 			++line;
@@ -167,8 +162,11 @@ public:
 			operator++();
 		return *this;
 	}
-	TextPosition operator+(size_t s) {
+	TextPosition operator+(size_t s) const {
 		return TextPosition(*this) += s;
+	}
+	const char* operator-(size_t s) const {
+		return _ptr - s;
 	}
 	size_t operator-(const TextPosition& other) const {
 		return _ptr - other._ptr;
