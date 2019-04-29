@@ -38,10 +38,11 @@ struct Token: Source {
 		case '&': case '|':
 		case '~': case '^':
 		case '!': case '=':
+		case ':':
 			return Type::Operator;
 
 		case '.': case ',':
-		case ':': case ';':
+		case ';':
 		case '@': case '$':
 		case '#': case '?':
 		case '\\':
@@ -86,6 +87,10 @@ struct Token: Source {
 	}
 	void load_binary(std::istream& stream) {
 		read(stream, *this);
+	}
+
+	std::string_view view() const {
+		return std::string_view(begin().ptr(), size());
 	}
 };
 
