@@ -55,10 +55,35 @@ struct Tree {
 		select(_ptr);
 		return val;
 	}
-	template<class... Args>
-	T& push_sibling(Args&&... args) {
-		up();
-		return push_child_and_select(std::forward<Args>(args)...);
+	template<class Iter, class... Args>
+	T& insert_capture(Iter item, Args&&... args) {
+		TreePtr pp;
+		decltype(pool.back().children.begin()) iter;
+		if constexpr (std::is_same_v<Iter, TreePtr>) {
+			pp = get(item).parent;
+			T& p = get(pp);
+			iter = std::find(p.children.begin(), p.children.end(), item);
+		}
+		else {
+			iter = item;
+			pp = get(*iter).parent;
+		}
+		T& res = pool.emplace_back(pp, std::forward<Args>(args)...);
+		T& p = get(pp);
+
+		res.children.insert(
+			res.children.end(),
+			std::move_iterator(iter),
+			std::move_iterator(p.children.end())
+		);
+		p.children.erase(iter, p.children.end());
+		p.children.emplace_back(ptr(res));
+
+		for (auto child : res.children) {
+			get(child).parent = ptr(res);
+		}
+
+		return res;
 	}
 	template<class... Args>
 	T& move_up() {
