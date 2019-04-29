@@ -75,7 +75,7 @@ struct Parser {
 
 	void parseBody() {
 		while (true) {
-			std::cout << tree << std::endl;
+			//std::cout << tree << std::endl;
 
 			eat_lines = true;
 			tree.push_child_and_select(Token::Space);
