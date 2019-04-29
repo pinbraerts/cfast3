@@ -1,4 +1,1 @@
-    
-	( ( "\"xx" ) )
-
-	 
+throw Error(std::string(iter->begin().ptr(), iter->end().ptr()))
