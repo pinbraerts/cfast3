@@ -9,13 +9,13 @@ struct Lexer {
 private:
 	std::unique_ptr<char_type[]> _buffer;
 
-	Lexer(char_type* buffer, size_t size): current(buffer), source(buffer, buffer + size), _buffer(buffer) {}
+	Lexer(char_type* buffer, size_t size) noexcept: current(buffer), source(buffer, buffer + size), _buffer(buffer) {}
 
 public:
 	TextPosition current;
 	Source source;
 
-	Token next() {
+	Token next() noexcept {
 		if (current >= source.end())
 			return Token::eof();
 
@@ -54,34 +54,34 @@ public:
 	}
 
 	struct Iter {
-		Iter(Lexer& l): lex(l), tok(lex.next()) {}
-		Iter(Lexer& l, Token t) : lex(l), tok(t) {}
+		Iter(Lexer& l) noexcept: lex(l), tok(lex.next()) {}
+		Iter(Lexer& l, Token t) noexcept: lex(l), tok(t) {}
 
 		Lexer& lex;
 		Token tok;
 
-		Iter& operator++() {
+		Iter& operator++() noexcept {
 			tok = lex.next();
 			return *this;
 		}
-		Token* operator->() {
+		Token* operator->() noexcept {
 			return &tok;
 		}
-		bool operator<(const Iter& other) const {
+		bool operator<(const Iter& other) const noexcept {
 			return tok.type != Token::End;
 		}
-		bool operator!=(const Iter& other) const {
+		bool operator!=(const Iter& other) const noexcept {
 			return tok.type != Token::End;
 		}
-		Token& operator*() {
+		Token& operator*() noexcept {
 			return tok;
 		}
 	};
 
-	Iter begin() {
+	Iter begin() noexcept {
 		return Iter(*this);
 	}
-	Iter end() {
+	Iter end() noexcept {
 		return Iter(*this, Token::eof());
 	}
 };

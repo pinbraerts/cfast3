@@ -20,10 +20,10 @@ struct Token: Source {
 		Error,
 	} type;
 
-	Token(Type t): type(t) {}
-	Token(Type t, TextPosition first, TextPosition last) : type(t), Source(first, last) {}
+	Token(Type t) noexcept: type(t) {}
+	Token(Type t, TextPosition first, TextPosition last) noexcept: type(t), Source(first, last) {}
 
-	static Token eof() {
+	static Token eof() noexcept {
 		return Token(Type::End);
 	}
 
@@ -89,7 +89,7 @@ struct Token: Source {
 		read(stream, *this);
 	}
 
-	std::string_view view() const {
+	std::string_view view() const noexcept {
 		return std::string_view(begin().ptr(), size());
 	}
 };

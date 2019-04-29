@@ -11,18 +11,18 @@ struct SyntaxNode: Token {
 	priority_t priority = 0;
 	Children children;
 
-	SyntaxNode(TreePtr _parent, const Token& tok) : Token(tok), parent(_parent) {}
-	SyntaxNode(TreePtr _parent, Token::Type t) : Token(t), parent(_parent) {}
-	SyntaxNode(TreePtr _parent, Token::Type t, priority_t _priority): Token(t), parent(_parent), priority(_priority) {}
-	SyntaxNode() : Token(Token::Error) {} // for vector
+	SyntaxNode(TreePtr _parent, const Token& tok) noexcept: Token(tok), parent(_parent) {}
+	SyntaxNode(TreePtr _parent, Token::Type t) noexcept : Token(t), parent(_parent) {}
+	SyntaxNode(TreePtr _parent, Token::Type t, priority_t _priority) noexcept : Token(t), parent(_parent), priority(_priority) {}
+	SyntaxNode() noexcept : Token(Token::Error), parent(0) {} // for vector
 	// Node(TreePtr _parent, Token::Type t, Lexer::Iter beg) : Token(t), parent(_parent), children(beg, beg) {}
 	// Node(TreePtr _parent, Token::Type t, Lexer::Iter beg, Lexer::Iter en) : Token(t), parent(_parent), children(beg, en) {}
 
-	auto working() {
+	auto working() noexcept {
 		return slice(children, first_no_space);
 	}
 
-	SyntaxNode& operator=(const Token& other) {
+	SyntaxNode& operator=(const Token& other) noexcept {
 		Token::operator=(other);
 		return *this;
 	}

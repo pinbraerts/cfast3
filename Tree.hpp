@@ -39,7 +39,7 @@ struct Tree {
 
 	template<class... Args>
 	T& push_child(Args&&... args) {
-		bool empty = is_empty();
+		const bool empty = is_empty();
 		T& val = pool.emplace_back(_last, std::forward<Args>(args)...);
 		if (!empty)
 			last().children.push_back(ptr(val));
@@ -47,9 +47,9 @@ struct Tree {
 	}
 	template<class... Args>
 	T& push_child_and_select(Args&&... args) {
-		bool empty = is_empty();
+		const bool empty = is_empty();
 		T& val = pool.emplace_back(_last, std::forward<Args>(args)...);
-		TreePtr _ptr = ptr(val);
+		const TreePtr _ptr = ptr(val);
 		if(!empty)
 			last().children.push_back(_ptr);
 		select(_ptr);
@@ -122,7 +122,7 @@ struct Tree {
 		return ptr(x);
 	}
 
-	bool is_empty() const {
+	bool is_empty() const noexcept {
 		return pool.empty();
 	}
 
@@ -144,10 +144,10 @@ struct Tree {
 	void select(const T& x) {
 		_last = ptr(x);
 	}
-	void select(TreePtr x) {
+	void select(TreePtr x) noexcept {
 		_last = x;
 	}
-	TreePtr last_position() {
+	TreePtr last_position() noexcept {
 		return _last;
 	}
 
@@ -162,7 +162,7 @@ struct Tree {
 	}
 
 	void load_binary(std::istream& stream, const char* buffer) {
-		size_t offs = (size_t)buffer;
+		size_t offs = size_t(buffer);
 		_last = 0;
 		read(stream, pool);
 		for (auto& node : pool) {
@@ -178,7 +178,7 @@ struct TreePrinter {
 	std::ostream& stream;
 	size_t depth;
 
-	TreePrinter(const Tree<T>& _tree, std::ostream& _stream) : tree(_tree), depth(0), stream(_stream) {}
+	TreePrinter(const Tree<T>& _tree, std::ostream& _stream) noexcept: tree(_tree), depth(0), stream(_stream) {}
 
 	void print(const T& t) {
 		if (&tree.last() == &t) stream << std::string((depth <= 1 ? 0 : depth - 1) * 4, ' ') << ">>> ";

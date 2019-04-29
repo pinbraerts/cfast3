@@ -14,21 +14,21 @@ struct Parser {
 	Traits traits;
 	bool eat_lines = false;
 
-	Parser(SyntaxTree& _tree, Lexer& lexer): tree(_tree), iter(lexer.begin()) {
+	Parser(SyntaxTree& _tree, Lexer& lexer) noexcept : tree(_tree), iter(lexer.begin()) {
 		tree.push_child(Token::Container); // root
 	}
 
 	struct Error {
 		std::string message;
 
-		Error(std::string msg): message(std::move(msg)) {}
+		Error(std::string msg) noexcept: message(std::move(msg)) {}
 		Error() = default;
 
-		static Error ok() {
+		static Error ok() noexcept {
 			return Error();
 		}
 
-		bool is_ok() const {
+		bool is_ok() const noexcept {
 			return message.empty();
 		}
 	};
@@ -50,8 +50,8 @@ struct Parser {
 
 	void parseQuote() {
 		tree.last() = Token(Token::Quote);
-		Source opening = tree.push_child(*iter); // opening
-		TreePtr body = tree | tree.push_child(Token::String); // body
+		const Source opening = tree.push_child(*iter); // opening
+		const TreePtr body = tree | tree.push_child(Token::String); // body
 
 		tree.select(body); // === tree.down(), tree.next()
 		tree.last().begin() = iter->end();
@@ -126,12 +126,17 @@ struct Parser {
 		}
 	}
 
-	Error parse(void(Parser::*f)() = &Parser::parseBody) {
+	Error parse(void(Parser::*f)() = &Parser::parseBody) noexcept {
+		if (f == nullptr)
+			return Error("Cannot call null parser");
 		try {
 			(this->*f)();
 		}
 		catch (const Error& e) {
 			return e;
+		}
+		catch (const std::exception& e) {
+			return Error(e.what());
 		}
 		return Error::ok();
 	}
@@ -144,7 +149,7 @@ struct Parser {
 	void parseBraces() {
 		tree.last() = Token(Token::Container);
 		tree.last().priority = 100;
-		TreePtr container = tree.last_position();
+		const TreePtr container = tree.last_position();
 		tree.push_child(*iter); // opening
 
 		++iter;
