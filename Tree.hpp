@@ -107,9 +107,9 @@ struct Tree {
 	}*/
 	void swap_children(TreePtr a, TreePtr b) {
 		SyntaxNode& x = pool[a], &y = pool[b];
-		for (TreePtr i = x.children.begin(); i < x.children.end(); ++i)
+		for (TreePtr i: x.children)
 			pool[i].parent = b;
-		for (TreePtr i = y.children.begin(); i < y.children.end(); ++i)
+		for (TreePtr i: y.children)
 			pool[i].parent = a;
 		std::swap(x.children, y.children);
 	}
@@ -200,7 +200,7 @@ struct TreePrinter {
 template<class T>
 std::ostream& operator<<(std::ostream& stream, const Tree<T>& a) {
 	if (a.is_empty()) return stream;
-	TreePrinter(a, stream).print(a.root());
+	TreePrinter<T>(a, stream).print(a.root());
 	return stream;
 }
 
