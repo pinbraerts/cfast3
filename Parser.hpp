@@ -42,9 +42,9 @@ struct Parser {
 			tree.push_child(*iter);
 			tree[tree.last().parent].first_no_space += 1;
 		}
-		// decomment to push spaces in every item
-		if (tree.last().children.empty())
-			tree.push_child(Token::Space);
+		// Use node.working() instead
+		// if (tree.last().children.empty())
+			// tree.push_child(Token::Space);
 		eat_lines = false;
 	}
 
