@@ -184,7 +184,7 @@ public:
 		return _ptr < other._ptr;
 	}
 	bool operator<=(const TextPosition& other) const noexcept {
-		return _ptr < other._ptr;
+		return _ptr <= other._ptr;
 	}
 	bool operator>=(const TextPosition& other) const noexcept {
 		return _ptr >= other._ptr;
