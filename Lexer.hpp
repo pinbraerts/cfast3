@@ -5,9 +5,88 @@
 
 namespace cf {
 
+struct LexerTraits {
+	Token::Type get_type(char_type chr) {
+		switch (chr) {
+		case ' ': case '\t':
+			return Token::Space;
+
+		case '+': case '-':
+		case '*': case '/': case '%':
+		case '<': case '>':
+		case '&': case '|':
+		case '~': case '^':
+		case '!': case '=':
+		case ':':
+			return Token::Operator;
+
+		case '.': case ',':
+		case ';':
+		case '@': case '$':
+		case '#': case '?':
+		case '\\':
+			return Token::Operator;
+
+		case '\'': case '"': case '`':
+			return Token::Quote;
+
+		case '(': case '{': case '[':
+			return Token::OpenBrace;
+
+		case ')': case '}': case ']':
+			return Token::CloseBrace;
+
+		case '\n': case '\r':
+			return Token::Line;
+
+		case '\0': return Token::End;
+		default: return Token::String;
+		}
+	}
+
+	bool joinable(char_type chr) {
+		switch (chr) {
+		case ' ': case '\t':
+			return true;
+
+		case '+': case '-':
+		case '*': case '/': case '%':
+		case '<': case '>':
+		case '&': case '|':
+		case '~': case '^':
+		case '!': case '=':
+		case ':':
+			return true;
+
+		case '.': case ',':
+		case ';':
+		case '@': case '$':
+		case '#': case '?':
+		case '\\':
+			return false;
+
+		case '\'': case '"': case '`':
+			return true;
+
+		case '(': case '{': case '[':
+			return false;
+
+		case ')': case '}': case ']':
+			return false;
+
+		case '\n': case '\r':
+			return false;
+
+		case '\0': return false;
+		default: return true;
+		}
+	}
+};
+
 struct Lexer {
 private:
 	std::unique_ptr<char_type[]> _buffer;
+	LexerTraits traits;
 
 	Lexer(char_type* buffer, size_t size) noexcept: current(buffer), source(buffer, buffer + size), _buffer(buffer) {}
 
@@ -19,15 +98,14 @@ public:
 		if (current >= source.end())
 			return Token::eof();
 
-		Token x(Token::get_type(current.chr()), current, current);
+		Token x(traits.get_type(current.chr()), current, current);
 		++current;
-		if (x.type == Token::SingleOperator || x.type == Token::CloseBrace ||
-			x.type == Token::OpenBrace || x.type == Token::End) {
+		if (!traits.joinable(current.chr())) {
 			x.end(current);
 			return x;
 		}
 
-		for (; current < source.end() && Token::get_type(current.chr()) == x.type; ++current);
+		for (; current < source.end() && traits.get_type(current.chr()) == x.type; ++current);
 		x.end(current);
 		return x;
 	}

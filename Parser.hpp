@@ -57,7 +57,7 @@ struct Parser {
 		tree.last().begin() = iter->end();
 		for (++iter; iter->type != Token::End &&
 			(iter->type != Token::Quote || *iter != opening); ++iter)
-			if (iter->type == Token::SingleOperator && iter->begin().chr() == '\\')
+			if (iter->type == Token::Operator && iter->begin().chr() == '\\')
 				++iter;
 		if (iter->type != Token::Quote)
 			throw Error("quote is not closed");
@@ -87,7 +87,7 @@ struct Parser {
 				while (tree.last().parent != 0)
 					tree.move_up();
 				throw Error::ok();
-			case Token::Operator: case Token::SingleOperator:
+			case Token::Operator:
 			{
 				TreePtr container = tree.last().parent;
 				tree.last() = *iter;

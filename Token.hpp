@@ -11,7 +11,6 @@ struct Token: Source {
 		Space,
 		Line,
 		Operator,
-		SingleOperator,
 		String,
 		Quote,
 		OpenBrace,
@@ -27,51 +26,13 @@ struct Token: Source {
 		return Token(Type::End);
 	}
 
-	constexpr static Type get_type(char_type chr) {
-		switch (chr) {
-		case ' ': case '\t':
-			return Type::Space;
-
-		case '+': case '-':
-		case '*': case '/': case '%':
-		case '<': case '>':
-		case '&': case '|':
-		case '~': case '^':
-		case '!': case '=':
-		case ':':
-			return Type::Operator;
-
-		case '.': case ',':
-		case ';':
-		case '@': case '$':
-		case '#': case '?':
-		case '\\':
-			return Type::SingleOperator;
-
-		case '\'': case '"': case '`':
-			return Type::Quote;
-
-		case '(': case '{': case '[':
-			return Type::OpenBrace;
-
-		case ')': case '}': case ']':
-			return Type::CloseBrace;
-
-		case '\n': case '\r':
-			return Type::Line;
-
-		case '\0': return Type::End;
-		default: return Type::String;
-		}
-	}
-
 	constexpr static const char* type2str(Type type) {
 		switch (type) {
 		case Type::OpenBrace: case Type::CloseBrace:
 			return "Brace";
 		case Type::End: return "End";
 		case Type::Line: return "Line";
-		case Type::SingleOperator: case Type::Operator:
+		case Type::Operator:
 			return "Operator";
 		case Type::Quote: return "Quote";
 		case Type::Space: return "Space";
