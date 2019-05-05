@@ -5,6 +5,22 @@
 
 namespace cf {
 
+struct Node {
+	TreePtr parent;
+	std::vector<TreePtr> children;
+
+	Node(TreePtr _parent): parent(_parent) {}
+
+	void save_binary(std::ostream& stream) {
+		write(stream, parent);
+		write(stream, children);
+	}
+	void load_binary(std::istream& stream) {
+		read(stream, parent);
+		read(stream, children);
+	}
+};
+
 template<class T>
 struct Tree {
 	using Pool = std::vector<T>;

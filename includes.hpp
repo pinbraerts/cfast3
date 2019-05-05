@@ -34,7 +34,7 @@ struct Token;
 struct Lexer;
 
 using TreePtr = size_t;
-
+struct Node;
 template<class T>
 struct Tree;
 
