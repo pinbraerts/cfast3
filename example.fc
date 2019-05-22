@@ -1,1 +1,24 @@
-throw Error(std::string(iter->begin().ptr(), iter->end().ptr()))
+void parseQuote() {
+	tree.last() = Token(Token::Quote);
+	const Source opening = tree.push_child(*iter); // opening
+	const TreePtr body = tree | tree.push_child(Token::String); // body
+
+	tree.select(body); // === tree.down(), tree.next()
+	tree.last().begin() = iter->end();
+	for (++iter; iter->type != Token::End &&
+		(iter->type != Token::Quote || *iter != opening); ++iter)
+		if (iter->type == Token::Operator && iter->begin().chr() == '\\')
+			++iter;
+	if (iter->type != Token::Quote)
+		throw Error("quote is not closed");
+
+	tree.last().end() = iter->begin();
+
+	tree.up();
+	tree.push_child_and_select(Token::Quote); // closure
+	tree.last() = *iter;
+	tree.up();
+	tree.up();
+
+	++iter;
+}
