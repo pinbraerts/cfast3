@@ -75,8 +75,6 @@ struct Parser {
 
 	void parseBody() {
 		while (true) {
-			//std::cout << tree << std::endl;
-
 			eat_lines = true;
 			tree.push_child_and_select(Token::Space);
 			eat_spaces();
@@ -93,14 +91,22 @@ struct Parser {
 				tree.last() = *iter;
 				priority_t p = traits.get_priority(*iter);
 				tree.last().priority = p;
+
 				if (p != tree[container].priority) {
-					for (; p > tree[container].priority && p > tree[tree[container].parent].priority; container = tree[container].parent)
+					for (; p > tree[container].priority && container; container = tree[container].parent)
 						tree.move_up();
-					auto& ch = tree[container].children;
-					auto i = ch.end() - 1;
-					if (ch.size() > 1 && (tree[ch[ch.size() - 2]].priority < p))
-						--i;
-					tree.select(tree.insert_capture(i, Token::Container, p));
+					if (p != tree[container].priority) {
+
+						auto& ch = tree[container].children;
+						auto i = ch.end();
+						do --i;
+						while (ch.begin() < i && (tree[*i].priority <= p));
+						if (tree[*i].priority > p)
+							++i;
+
+						tree.select(tree.insert_capture(i, Token::Container, p));
+					}
+					else tree.up();
 				}
 				else tree.up();
 				++iter;
@@ -150,7 +156,7 @@ struct Parser {
 		tree.last() = Token(Token::Container);
 		tree.last().priority = 100;
 		const TreePtr container = tree.last_position();
-		tree.push_child(*iter); // opening
+		tree.push_child(*iter, 100); // opening
 
 		++iter;
 		//tree.push_child_and_select(Token::Container);
