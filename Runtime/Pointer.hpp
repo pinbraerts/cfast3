@@ -18,10 +18,12 @@ public:
 		++ptrs;
 	}
 	void dec_ptrs() {
-		--ptrs;
-		if (ptrs == 0) {
-			self().~T();
-			delete this;
+		if (ptrs != 0) {
+			--ptrs;
+			if (ptrs == 0) {
+				self().~T();
+				delete this;
+			}
 		}
 	}
 

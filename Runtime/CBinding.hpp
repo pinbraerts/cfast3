@@ -131,7 +131,7 @@ struct Root: Object {
 			return *(T*)c_unwrap_f(&x, T{});
 		}
 		else if constexpr (types::index<T> < types::size) {
-			if (x->klass != children[types::index<T>]) return T(); // TODO cast or return error of type mismatch
+			if (x->type != children[types::index<T>]) return T(); // TODO cast or return error of type mismatch
 			return *(T*)x->raw_data;
 		}
 		else if constexpr (std::is_same_v<T, PObject>) {
@@ -142,7 +142,7 @@ struct Root: Object {
 
 	template<class Ret, class... Args>
 	void* c_unwrap_f(PObject x, f_type<Ret, Args...>) {
-		if (x->klass != get_function_class<Ret, Args...>()) return nullptr; // TODO cast or return error of type mismatch
+		if (x->type != get_function_class<Ret, Args...>()) return nullptr; // TODO cast or return error of type mismatch
 		return x->raw_data;
 	}
 };

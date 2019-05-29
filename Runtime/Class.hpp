@@ -30,14 +30,14 @@ struct Class : Object {
 		size_t i = 1;
 		if (i < children.size()) {
 			auto& income = self, &expected = children[i];
-			if (income->klass != expected->klass) return nullptr; // TODO check cast, return error "Argument class mismatch"
-			if (!income->name.empty() && income->name != expected->name) return nullptr; // TODO return error "Argument name mismatch"
+			if (income->type != expected->type) return nullptr; // TODO check cast, return error "Argument class mismatch"
+			if (!income->name().empty() && income->name() != expected->name()) return nullptr; // TODO return error "Argument name mismatch"
 		}
 
 		for (++i; i < children.size() && i <= arguments->children.size(); ++i) {
 			auto& income = arguments->children[i - 1], &expected = children[i];
-			if (income->klass != expected->klass) return nullptr; // TODO check cast, return error "Argument class mismatch"
-			if (!income->name.empty() && income->name != expected->name) return nullptr; // TODO return error "Argument name mismatch"
+			if (income->type != expected->type) return nullptr; // TODO check cast, return error "Argument class mismatch"
+			if (!income->name().empty() && income->name() != expected->name()) return nullptr; // TODO return error "Argument name mismatch"
 		}
 
 		// default arguments

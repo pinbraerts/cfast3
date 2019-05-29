@@ -2,6 +2,7 @@
 #define CFAST_OBJECT_HPP
 
 #include <algorithm>
+#include <string_view>
 
 #include "Pointer.hpp"
 
@@ -17,27 +18,54 @@ using PClass = ptr<Class>;
 using WClass = Class * ;
 
 struct Object: Collectible<Object> {
-	PClass klass;
+private:
+	std::string_view _m_name = std::string_view();
+
+	std::string_view copy_name(const std::string_view& _name) {
+		if (!_name.empty()) {
+			char* nm = new char[_name.size()];
+			std::copy(_name.begin(), _name.end(), nm);
+			return std::string_view(nm, _name.size());
+		}
+		return std::string_view();
+	}
+
+	void release_name() {
+		if (!_m_name.empty()) {
+			delete _m_name.data();
+			_m_name = std::string_view();
+		}
+	}
+
+public:
+	PClass type;
 	WObject context = nullptr;
-	std::string name;
 	std::vector<PObject> children;
 
 	void* raw_data = nullptr;
 
-	Object(PClass _klass, WObject _context, std::string _name = "", void* _raw_data = nullptr) :
-		klass(std::move(_klass)),
+	Object(PClass _klass, WObject _context, std::string_view _name = std::string_view(), void* _raw_data = nullptr) :
+		type(std::move(_klass)),
 		context(_context),
-		name(std::move(_name)),
+		_m_name(copy_name(_name)),
 		raw_data(_raw_data) { }
 
-	Object(PClass _klass, WObject _context, std::vector<PObject> _children, std::string _name = "", void* _raw_data = nullptr) :
-		klass(std::move(_klass)),
+	Object(PClass _klass, WObject _context, std::vector<PObject> _children, std::string_view _name = std::string_view(), void* _raw_data = nullptr) :
+		type(std::move(_klass)),
 		context(_context),
-		name(std::move(_name)),
+		_m_name(copy_name(_name)),
 		children(std::move(_children)),
 		raw_data(_raw_data) { }
 
 	Object() = default;
+
+	void name(std::string_view _name) {
+		release_name();
+		_m_name = copy_name(_name);
+	}
+	const std::string_view& name() {
+		return _m_name;
+	}
 
 	bool is_root() const {
 		return context == nullptr;
@@ -50,7 +78,7 @@ struct Object: Collectible<Object> {
 
 	PObject find_local(std::string name) {
 		for (auto s : children) {
-			if (std::strncmp(name.c_str(), s->name.c_str(), std::min(name.size(), s->name.size())) == 0)
+			if (s->_m_name == name)
 				return s;
 		}
 		return nullptr;
@@ -89,10 +117,11 @@ struct Object: Collectible<Object> {
 	~Object() {
 		if (raw_data != nullptr) {
 			delete raw_data;
+			raw_data = nullptr;
 		}
+		release_name();
 	}
 };
-
 
 
 #endif // !CFAST_OBJECT_HPP
