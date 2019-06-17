@@ -1,29 +1,26 @@
 #include <iostream>
 
-#include "CBinding.hpp"
+#include "Object.hpp"
 
-double f(float x) {
-	std::cout << x << std::endl;
-	return x + 5;
-}
+struct X {
+	int a;
+	double b;
+};
 
 int main() {
-	PObject global = new Root();
+	CppContext ctx;
 
-	PObject x = global->c_wrap<float>(4.5f);
-	x->name("x");
-	global->children.push_back(x);
+	PType _X = ctx.CppType(X);
+	_X->AddMember(PMember::make("a", sizeof(int)));
+	_X->AddMember(PMember::make("b", sizeof(double)));
 
-	PObject _f = global->c_wrap(f);
-	_f->name("f");
-	global->children.push_back(_f);
+	counted<Object> x = new (_X) Object(_X);
 
-	_f = global->find_all("f");
-	x = global->find_all("x");
-	std::cout << _f->type->name() << ' ' << x->type->name() << std::endl;
+	int* a = (int*)x->GetMember("a");
+	std::cout << a << ' ' << &(((X*)x->body())->a) << std::endl;
 
-	PObject res = _f->type->invoke(global, _f, new Object(nullptr, nullptr, std::vector<PObject>{ x }));
-	std::cout << res->type->name() << ' ' << global->c_unwrap<double>(res) << std::endl;
+	double* b = (double*)x->GetMember("b");
+	std::cout << b << ' ' << &(((X*)x->body())->b) << std::endl;
 
 	return 0;
 }

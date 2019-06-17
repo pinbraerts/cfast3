@@ -6,51 +6,34 @@
 
 #include "Class.hpp"
 
-template<class... T> constexpr size_t index_impl = 0;
-template<class T, class F, class... U> constexpr size_t index_impl<T, F, U...> = index_impl<T, U...> +1;
-template<class T, class... U> constexpr size_t index_impl<T, T, U...> = 0;
-
-template<class... Args>
-struct types_list {
-	template<size_t i> using get_t = std::tuple_element_t<i, std::tuple<Args...>>;
-
-	template<class T> static constexpr size_t index = index_impl<T, Args...>;
-
-	static constexpr size_t size = sizeof...(Args);
-
-	using sequence = std::index_sequence_for<Args...>;
-};
-
-template<class Ret, class... Args> using f_type = Ret(*)(Args...);
-
-template<class Ret, class types, class F, size_t... i>
+template<class Ret, class traits, class F, size_t... i>
 PObject invoke_c_function_impl(PObject context, PObject self, PObject arguments, std::index_sequence<i...>) {
 	F f = *(F*)self->raw_data;
 	if (f == nullptr) return nullptr;
-	return context->c_wrap<Ret>(f(context->c_unwrap<types::get_t<i>>(arguments->children[i])...));
+	return context->c_wrap<Ret>(f(context->c_unwrap<traits::get_t<i>>(arguments->children[i])...));
 }
 
 template<class Ret, class... Args>
 PObject invoke_c_function(PObject context, PObject self, PObject arguments) {
-	using types = types_list<Args...>;
+	using traits = types_list<Args...>;
 	using F = f_type<Ret, Args...>;
-	return invoke_c_function_impl<Ret, types, F>(context, self, arguments, types::sequence{});
+	return invoke_c_function_impl<Ret, traits, F>(context, self, arguments, traits::sequence{});
 }
 
 struct Root: Object {
-	using types = types_list<int, float, double>;
+	using traits = types_list<int, float, double>;
 	static constexpr const char* names[] = { "Int", "Float", "Double" };
 
 	std::map<std::vector<size_t>, WClass> function_classes;
 
 	template<size_t... i> void push_impl(std::index_sequence<i...>) {
 		children = std::vector<PObject> {
-			new Class(this, names[i], sizeof(types::get_t<i>))...
+			new Class(this, names[i], sizeof(traits::get_t<i>))...
 		};
 	}
 
 	Root() {
-		push_impl(types::sequence{});
+		push_impl(traits::sequence{});
 	}
 
 	template<class T>
@@ -61,8 +44,8 @@ struct Root: Object {
 		else if constexpr (std::is_function_v<T>) {
 			return c_wrap_f(&x);
 		}
-		else if constexpr (types::index<T> < types::size) {
-			return new Object(children[types::index<T>], nullptr, "", new T(x));
+		else if constexpr (traits::index<T> < traits::size) {
+			return new Object(children[traits::index<T>], nullptr, "", new T(x));
 		}
 		else if constexpr (std::is_same_v<T, PObject>) {
 			return x;
@@ -72,7 +55,7 @@ struct Root: Object {
 
 	template<class First, class... Args> static void make_argument_names_impl(std::ostringstream& ss) {
 		// TODO add check
-		ss << names[types::index<First>];
+		ss << names[traits::index<First>];
 		if constexpr (sizeof...(Args) > 0) {
 			ss << ", ";
 			return make_argument_names_impl<Args...>(ss);
@@ -88,7 +71,7 @@ struct Root: Object {
 	static std::string make_function_name() {
 		std::ostringstream ss;
 		// TODO add check
-		ss << names[types::index<Ret>] << '(';
+		ss << names[traits::index<Ret>] << '(';
 		make_argument_names<Args...>(ss);
 		ss << ')';
 		return ss.str();
@@ -98,16 +81,16 @@ struct Root: Object {
 	static std::vector<PClass> make_arguments() {
 		// TODO add check
 		return std::vector<PClass> {
-			(PClass)children[types::index<Ret>],
-				(PClass)children[types::index<Args>]...
+			(PClass)children[traits::index<Ret>],
+				(PClass)children[traits::index<Args>]...
 		};
 	}
 
 	template<class Ret, class... Args>
 	PClass get_function_class() {
 		std::vector<size_t> expected{
-			types::index<Ret>,
-			types::index<Args>...
+			traits::index<Ret>,
+			traits::index<Args>...
 		};
 		auto it = function_classes.lower_bound(expected);
 		if (it != function_classes.end() && it->first == expected) {
@@ -130,8 +113,8 @@ struct Root: Object {
 		if constexpr (std::is_pointer_v<T> && std::is_function_v<std::remove_pointer_t<T>>) {
 			return *(T*)c_unwrap_f(&x, T{});
 		}
-		else if constexpr (types::index<T> < types::size) {
-			if (x->type != children[types::index<T>]) return T(); // TODO cast or return error of type mismatch
+		else if constexpr (traits::index<T> < traits::size) {
+			if (x->type != children[traits::index<T>]) return T(); // TODO cast or return error of type mismatch
 			return *(T*)x->raw_data;
 		}
 		else if constexpr (std::is_same_v<T, PObject>) {
