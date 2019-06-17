@@ -7,7 +7,6 @@
 namespace cf {
 
 struct SyntaxNode: Node, Token {
-	size_t first_no_space = 0;
 	priority_t priority = 0;
 
 	SyntaxNode(TreePtr _parent, const Token& tok) noexcept: Token(tok), Node(_parent) {}
@@ -18,10 +17,6 @@ struct SyntaxNode: Node, Token {
 	// Node(TreePtr _parent, Token::Type t, Lexer::Iter beg) : Token(t), parent(_parent), children(beg, beg) {}
 	// Node(TreePtr _parent, Token::Type t, Lexer::Iter beg, Lexer::Iter en) : Token(t), parent(_parent), children(beg, en) {}
 
-	auto working() noexcept {
-		return slice(children, first_no_space);
-	}
-
 	SyntaxNode& operator=(const Token& other) noexcept {
 		Token::operator=(other);
 		return *this;
@@ -30,13 +25,11 @@ struct SyntaxNode: Node, Token {
 	void save_binary(std::ostream& stream) {
 		Node::save_binary(stream);
 		Token::save_binary(stream);
-		write(stream, first_no_space);
 		write(stream, priority);
 	}
 	void load_binary(std::istream& stream) {
 		Node::load_binary(stream);
 		Token::load_binary(stream);
-		read(stream, first_no_space);
 		read(stream, priority);
 	}
 };

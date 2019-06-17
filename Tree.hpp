@@ -9,7 +9,7 @@ struct Node {
 	TreePtr parent;
 	std::vector<TreePtr> children;
 
-	Node(TreePtr _parent): parent(_parent) {}
+	Node(TreePtr _parent) noexcept: parent(_parent) {}
 
 	void save_binary(std::ostream& stream) {
 		write(stream, parent);
@@ -72,34 +72,31 @@ struct Tree {
 		return val;
 	}
 	template<class Iter, class... Args>
-	T& insert_capture(Iter item, Args&&... args) {
-		TreePtr pp;
-		decltype(pool.back().children.begin()) iter;
-		if constexpr (std::is_same_v<Iter, TreePtr>) {
-			pp = get(item).parent;
-			T& p = get(pp);
-			iter = std::find(p.children.begin(), p.children.end(), item);
-		}
-		else {
-			iter = item;
-			pp = get(*iter).parent;
-		}
+	T& insert_capture(Iter first, Iter last, Args&&... args) {
+		TreePtr pp = get(*first).parent;
 		T& res = pool.emplace_back(pp, std::forward<Args>(args)...);
 		T& p = get(pp);
 
 		res.children.insert(
 			res.children.end(),
-			std::move_iterator(iter),
-			std::move_iterator(p.children.end())
+			std::move_iterator(first),
+			std::move_iterator(last)
 		);
-		p.children.erase(iter, p.children.end());
+		p.children.erase(first, last);
 		p.children.emplace_back(ptr(res));
 
-		for (auto child : res.children) {
+		for (TreePtr child: res.children) {
 			get(child).parent = ptr(res);
 		}
 
 		return res;
+	}
+	template<class Iter, class... Args>
+	T& insert_capture(Iter first, Args&& ... args) {
+		TreePtr pp = get(*first).parent;
+		T& res = pool.emplace_back(pp, std::forward<Args>(args)...);
+		T& p = get(pp);
+		return insert_capture(first, p.children.end(), std::forward<Args>(args)...);
 	}
 	template<class... Args>
 	T& move_up() {

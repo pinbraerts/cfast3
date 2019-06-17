@@ -1,26 +1,49 @@
 #include <iostream>
 
-#include "Object.hpp"
+#include "Binder.hpp"
 
-struct X {
-	int a;
-	double b;
-};
+using namespace cf;
+using namespace rt;
 
 int main() {
-	CppContext ctx;
+	//Scope global;
 
-	PType _X = ctx.CppType(X);
-	_X->AddMember(PMember::make("a", sizeof(int)));
-	_X->AddMember(PMember::make("b", sizeof(double)));
+	//Type* cint = global.Add<Type>("Int");
+	//Type* cdouble = global.Add<Type>("Double");
 
-	counted<Object> x = new (_X) Object(_X);
+	//Type* _X = global.Add<Type>("X");
+	//_X->Add<Method>("a", cint);
+	//_X->Add<Method>("b", cdouble);
 
-	int* a = (int*)x->GetMember("a");
-	std::cout << a << ' ' << &(((X*)x->body())->a) << std::endl;
+	//std::cout << std::boolalpha;
+	//std::cout << _X->Find("a")->type->name << std::endl;
+	//std::cout << bool(_X->Find("c")) << std::endl;
 
-	double* b = (double*)x->GetMember("b");
-	std::cout << b << ' ' << &(((X*)x->body())->b) << std::endl;
+
+#if 0
+	SyntaxTree tree;
+	std::ifstream input("example.out", std::ios::binary);
+	Lexer l = Lexer::from_file("example.fc");
+	tree.load_binary(input, l.source.begin().ptr());
+	std::cout << tree << std::endl;
+#else
+	Lexer l = Lexer::from_file("..//example.fc");
+	SyntaxTree tree;
+	Parser p(tree, l);
+	Parser::Error e = p.parse();
+	if (!e.is_ok())
+		std::cerr << e.message << std::endl;
+	std::cout << tree << std::endl;
+	std::ofstream output("example.out", std::ios::binary);
+	tree.save_binary(output, l.source.begin().ptr());
+#endif
+
+	BoundTree bound;
+	Scope global;
+	Binder b(tree, bound, global);
+	b.Bind();
+
+	std::cout << bound << std::endl;
 
 	return 0;
 }
