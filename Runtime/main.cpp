@@ -27,14 +27,14 @@ int main() {
 	tree.load_binary(input, l.source.begin().ptr());
 	std::cout << tree << std::endl;
 #else
-	Lexer l = Lexer::from_file("..//example.fc");
+	Lexer l = Lexer::from_file("..//Analysis//example.fc");
 	SyntaxTree tree;
 	Parser p(tree, l);
 	Parser::Error e = p.parse();
 	if (!e.is_ok())
 		std::cerr << e.message << std::endl;
 	std::cout << tree << std::endl;
-	std::ofstream output("example.out", std::ios::binary);
+	std::ofstream output("..//Analysis//example.out", std::ios::binary);
 	tree.save_binary(output, l.source.begin().ptr());
 #endif
 

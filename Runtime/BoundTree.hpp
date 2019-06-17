@@ -2,7 +2,7 @@
 #define CFAST_BOUND_TREE_HPP
 
 #include "Object.hpp"
-#include "..//Parser.hpp"
+#include "../Analysis/Parser.hpp"
 
 namespace cf::rt {
 
