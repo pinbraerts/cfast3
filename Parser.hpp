@@ -14,7 +14,7 @@ struct Parser {
 	Traits traits;
 	bool eat_lines = false;
 
-	Parser(SyntaxTree& _tree, Lexer& lexer) noexcept : tree(_tree), iter(lexer.begin()) {
+	Parser(SyntaxTree& _tree, Lexer& lexer): tree(_tree), iter(lexer.begin()) {
 		tree.push_child(Token::Container); // root
 	}
 
@@ -40,7 +40,6 @@ struct Parser {
 				(eat_lines && iter->type == Token::Line)
 			); ++iter) {
 			tree.push_child(*iter);
-			tree[tree.last().parent].first_no_space += 1;
 		}
 		// Use node.working() instead
 		// if (tree.last().children.empty())
@@ -132,7 +131,7 @@ struct Parser {
 		}
 	}
 
-	Error parse(void(Parser::*f)() = &Parser::parseBody) noexcept {
+	Error parse(void(Parser::*f)() = &Parser::parseBody) {
 		if (f == nullptr)
 			return Error("Cannot call null parser");
 		try {

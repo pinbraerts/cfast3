@@ -6,7 +6,7 @@
 namespace cf {
 
 struct LexerTraits {
-	Token::Type get_type(char_type chr) {
+	Token::Type get_type(char_type chr) noexcept {
 		switch (chr) {
 		case ' ': case '\t':
 			return Token::Space;
@@ -44,7 +44,7 @@ struct LexerTraits {
 		}
 	}
 
-	bool joinable(char_type chr) {
+	bool joinable(char_type chr) noexcept {
 		switch (chr) {
 		case ' ': case '\t':
 			return true;
