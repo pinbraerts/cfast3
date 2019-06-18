@@ -37,7 +37,7 @@ struct Binder {
 	Method* Find(std::string s) {
 		Method* m = global.Find(s);
 		if (m == nullptr)
-			return global.Add<Method>(s);
+			return global.Declare<Method>(s);
 		return m;
 	}
 	Method* Find(const SyntaxNode& node) {
