@@ -5,13 +5,6 @@
 using namespace cf;
 using namespace rt;
 
-struct Operation {
-	enum Code {
-		Call,
-		Push,
-	} code;
-};
-
 int main() {
 #if 0
 	Scope global;
@@ -24,8 +17,8 @@ int main() {
 	_X->Declare<Method>("b", cdouble);
 
 	std::cout << std::boolalpha;
-	std::cout << _X->Find("a")->type->name << std::endl;
-	std::cout << bool(_X->Find("c")) << std::endl;
+	std::cout << _X->Resolve("a")->type->name << std::endl;
+	std::cout << bool(_X->Resolve("c")) << std::endl;
 #else
 	Lexer l = Lexer::FromFile("..//Analysis//example.fc");
 	SyntaxTree tree;
@@ -38,8 +31,10 @@ int main() {
 	tree.SaveBinary(output, l.source.begin().ptr());
 
 	Scope global;
+	Flow flow;
+	flow.scope_stack.push_back(&global);
 	BoundTree b;
-	Binder(tree, b, global).Bind();
+	Binder(tree, b, flow).Bind();
 	std::cout << b << std::endl;
 
 #endif
