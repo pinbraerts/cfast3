@@ -69,25 +69,18 @@ struct Binder {
 	}
 
 	template<bool direction>
-	void BindOperator(TreePtr p) {
+	void BindBinaryOperator(TreePtr p) {
 		const auto& node = syntax[p];
 		const auto& c = node.children;
 		if (c.empty()) throw std::runtime_error("no no no");
 		
 		auto i = children_begin<direction>(c), e = children_end<direction>(c);
-		if (syntax[*i].priority == node.priority) { // unary operator
-			Method* op = FindOperator(*i);
-			++i;
-			tree.push_child_and_select(op);
-			Bind(*i);
-			tree.up();
-		}
-		else Bind(*i);
+		BindUnaryOperator<direction>(p, i, e);
 		for (++i; i < e; ++i) {
 			if (syntax[*i].priority != 0) { // binary operator
 				Method* op = FindOperator(*i);
 				++i;
-				Bind(*i);
+				BindUnaryOperator<direction>(p, i, e);
 				if constexpr (direction) {
 					auto ce = tree.last().children.end();
 					tree.insert_capture(ce - 2, ce, op);
@@ -98,32 +91,99 @@ struct Binder {
 				}
 			}
 		}
+		if constexpr (!direction) {
+			auto& c = tree[*tree.last().children.rbegin()].children;
+			std::reverse(c.begin(), c.end());
+		}
 	}
 
-	void BindOperator(TreePtr p, bool direction) {
-		if (direction) {
-			BindOperator<true>(p);
+	template<bool direction, class Iter>
+	void BindUnaryOperator(TreePtr p, Iter first, Iter last) {
+		const auto& node = syntax[p];
+		const auto& c = node.children;
+		if (c.empty()) throw std::runtime_error("no no no");
+
+		Iter i;
+		for (i = first; i < last && syntax[*i].priority == node.priority; ++i);
+		if (i >= last) throw std::runtime_error("no no no");
+
+		Bind(*i);
+		for (; i > first;) {
+			--i;
+			Method* op = FindOperator(*i);
+			if constexpr(direction)
+				tree.insert_capture(tree.last().children.end() - 1, tree.last().children.end(), op);
+			else
+				tree.insert_capture(tree.last().children.begin(), tree.last().children.begin() + 1, op);
 		}
-		else BindOperator<false>(p);
+	}
+
+	void BindMultiplie(TreePtr p) {
+		const auto& node = syntax[p];
+		const auto& c = node.children;
+		if (c.empty()) throw std::runtime_error("no no no");
+
+		auto i = c.begin(), e = c.end();
+		if (i >= e) return;
+
+		if (syntax[*i].priority == node.priority)
+			throw std::runtime_error("leading multiplie");
+		Bind(*i);
+		++i;
+		
+		if (i >= e) return;
+		if (syntax[*i].priority != node.priority)
+			throw std::runtime_error("no no no"); // TODO think about function call
+		Method* op = FindOperator(*i);
+		tree.select(tree.insert_capture(tree.last().children.end() - 1, tree.last().children.end(), op));
+		for (++i; i < e; ++i) {
+			if (syntax[*i].priority == node.priority)
+				throw std::runtime_error("empty space");
+			Bind(*i);
+			++i;
+			if (i >= e) break;;
+			if (syntax[*i].priority != node.priority)
+				throw std::runtime_error("no no no"); // TODO think about function call
+		}
+		tree.up();
+	}
+
+	void BindOperator(TreePtr p) {
+		const auto& node = syntax[p];
+		if (traits.Is(node, traits.binary)) {
+			if (traits.Is(node, traits.ltr)) {
+				BindBinaryOperator<true>(p);
+			}
+			else BindBinaryOperator<false>(p);
+		}
+		else if (traits.Is(node, traits.unary)) {
+			if (traits.Is(node, traits.ltr)) {
+				BindUnaryOperator<true>(p, node.children.begin(), node.children.end());
+			}
+			else BindUnaryOperator<false>(p, node.children.rbegin(), node.children.rend());
+		}
+		else if (traits.Is(node, traits.multiplie)) {
+			BindMultiplie(p);
+		}
 	}
 
 	void Bind(TreePtr p = 0) {
 		const SyntaxNode& node = syntax[p];
-		if (node.type == Token::End || node.type == Token::Space) return;
+		if (node.type == Token::End ||
+			node.type == Token::Space ||
+			node.type == Token::CloseBrace ||
+			node.type == Token::OpenBrace) return;
 		else if (node.children.empty() || (node.children.size() == 1 && syntax[node.children[0]].type == Token::Space)) {
 			tree.push_child(Find(node));
 		}
-		else if(node.priority == 0) {
-			tree.push_child_and_select(nullptr);
+		else if(node.priority == 0) { // TODO check if it's a braces or string literal or root element
+			tree.push_child_and_select(Find("Braces"));
 			for (TreePtr i : node.children)
 				Bind(i);
 			tree.up();
 		}
 		else if (node.priority < 100) { // operator
-			BindOperator(p, traits.ltr(node.priority));
-		}
-		else { // brace
-			// todo
+			BindOperator(p);
 		}
 	}
 };
