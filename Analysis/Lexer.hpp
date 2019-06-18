@@ -1,87 +1,9 @@
 #ifndef CFAST_LEXER_HPP
 #define CFAST_LEXER_HPP
 
-#include "Token.hpp"
+#include "LexerTraits.hpp"
 
 namespace cf {
-
-struct LexerTraits {
-	Token::Type get_type(char_type chr) noexcept {
-		switch (chr) {
-		case ' ': case '\t':
-			return Token::Space;
-
-		case '+': case '-':
-		case '*': case '/': case '%':
-		case '<': case '>':
-		case '&': case '|':
-		case '~': case '^':
-		case '!': case '=':
-		case ':':
-			return Token::Operator;
-
-		case '.': case ',':
-		case ';':
-		case '@': case '$':
-		case '#': case '?':
-		case '\\':
-			return Token::Operator;
-
-		case '\'': case '"': case '`':
-			return Token::Quote;
-
-		case '(': case '{': case '[':
-			return Token::OpenBrace;
-
-		case ')': case '}': case ']':
-			return Token::CloseBrace;
-
-		case '\n': case '\r':
-			return Token::Line;
-
-		case '\0': return Token::End;
-		default: return Token::String;
-		}
-	}
-
-	bool joinable(char_type chr) noexcept {
-		switch (chr) {
-		case ' ': case '\t':
-			return true;
-
-		case '+': case '-':
-		case '*': case '/': case '%':
-		case '<': case '>':
-		case '&': case '|':
-		case '~': case '^':
-		case '!': case '=':
-		case ':':
-			return true;
-
-		case '.': case ',':
-		case ';':
-		case '@': case '$':
-		case '#': case '?':
-		case '\\':
-			return false;
-
-		case '\'': case '"': case '`':
-			return true;
-
-		case '(': case '{': case '[':
-			return false;
-
-		case ')': case '}': case ']':
-			return false;
-
-		case '\n': case '\r':
-			return false;
-
-		case '\0': return false;
-		default: return true;
-		}
-	}
-};
 
 struct Lexer {
 private:
@@ -99,14 +21,24 @@ public:
 			return Token::eof();
 
 		Token x(traits.get_type(current.chr()), current, current);
-		++current;
-		if (!traits.joinable(current.chr())) {
-			x.end(current);
-			return x;
+		x.end(++current);
+		Token temp = x;
+
+		while (current < source.end() && x.type == traits.get_type(current.chr())) {
+			temp.end(++current);
+			switch (traits.Match(temp)) {
+			case LexerTraits::Combination:
+				x = temp;
+				break;
+			case LexerTraits::Start:
+				break;
+			case LexerTraits::Nothing:
+			default:
+				current = x.end();
+				return x;
+			}
 		}
 
-		for (; current < source.end() && traits.get_type(current.chr()) == x.type; ++current);
-		x.end(current);
 		return x;
 	}
 
