@@ -22,21 +22,21 @@ struct SyntaxNode: Node, Token {
 		return *this;
 	}
 
-	void save_binary(std::ostream& stream) {
-		Node::save_binary(stream);
-		Token::save_binary(stream);
-		write(stream, priority);
+	void SaveBinary(std::ostream& stream) {
+		Node::SaveBinary(stream);
+		Token::SaveBinary(stream);
+		Write(stream, priority);
 	}
-	void load_binary(std::istream& stream) {
-		Node::load_binary(stream);
-		Token::load_binary(stream);
-		read(stream, priority);
+	void LoadBinary(std::istream& stream) {
+		Node::LoadBinary(stream);
+		Token::LoadBinary(stream);
+		Read(stream, priority);
 	}
 };
 
 std::ostream& operator<<(std::ostream& stream, const SyntaxNode& node) {
-	return node.is_empty() ?
-		stream << Token::type2str(node.type) :
+	return node.IsEmpty() ?
+		stream << Token::TypeToString(node.type) :
 		stream << (const Token&)node;
 }
 

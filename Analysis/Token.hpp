@@ -1,7 +1,7 @@
 #ifndef CFAST_TOKEN_HPP
 #define CFAST_TOKEN_HPP
 
-#include "Source.hpp"
+#include "TextPosition.hpp"
 
 namespace cf {
 
@@ -26,7 +26,7 @@ struct Token: Source {
 		return Token(Type::End);
 	}
 
-	constexpr static const char* type2str(Type type) {
+	constexpr static const char* TypeToString(Type type) {
 		switch (type) {
 		case Type::OpenBrace: case Type::CloseBrace:
 			return "Brace";
@@ -43,20 +43,16 @@ struct Token: Source {
 		}
 	}
 
-	void save_binary(std::ostream& stream) {
-		write(stream, *this);
+	void SaveBinary(std::ostream& stream) {
+		Write(stream, *this);
 	}
-	void load_binary(std::istream& stream) {
-		read(stream, *this);
-	}
-
-	std::string_view view() const noexcept {
-		return std::string_view(begin().ptr(), size());
+	void LoadBinary(std::istream& stream) {
+		Read(stream, *this);
 	}
 };
 
 std::ostream& operator<<(std::ostream& stream, const Token& token) {
-	return (stream << Token::type2str(token.type) << " \'").write(token.begin().ptr(), token.size()) << '\'';
+	return (stream << Token::TypeToString(token.type) << " \'").write(token.begin().ptr(), token.Size()) << '\'';
 }
 
 } // namespace cf
