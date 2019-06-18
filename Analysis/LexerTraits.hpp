@@ -6,7 +6,7 @@
 namespace cf {
 
 struct LexerTraits {
-	Token::Type get_type(char_type chr) noexcept {
+	Token::Type GetType(char_type chr) noexcept {
 		switch (chr) {
 		case ' ': case '\t':
 			return Token::Space;
@@ -62,10 +62,10 @@ struct LexerTraits {
 	Result Match(const Token& tok) {
 		if (tok.type == Token::String)
 			return Combination;
-		std::string s (tok.view());
+		std::string_view s (tok);
 		auto iter = possible_combinations.lower_bound(s);
 		if (iter == possible_combinations.end()) return Nothing;
-		std::string s2 (*iter);
+		std::string_view s2 (*iter);
 		if (s2.find_first_of(s) == 0) {
 			return s2.size() == s.size() ? Combination : Start;
 		}
