@@ -1,7 +1,6 @@
 #ifndef CFAST_TRAITS_HPP
 #define CFAST_TRAITS_HPP
 
-#include "includes.hpp"
 #include "Token.hpp"
 
 namespace cf {
@@ -39,18 +38,18 @@ struct ParserTraits {
 		"++", "--", "!", "~"
 	};
 
-	priority_t get_priority(const Token& src) const {
-		if (auto iter = priority_map.find(src.view()); iter != priority_map.end())
+	priority_t GetPriority(const Token& src) const {
+		if (auto iter = priority_map.find(src); iter != priority_map.end())
 			return iter->second;
 		else return 0;
 	}
 
-	bool is_assignment(const Token& src) const {
-		return assignment_set.find(src.view()) != assignment_set.end();
+	bool IsAssignment(const Token& src) const {
+		return assignment_set.find(src) != assignment_set.end();
 	}
 
-	bool is_unary(const Token& src) const {
-		return unary_set.find(src.view()) != unary_set.end();
+	bool IsUnary(const Token& src) const {
+		return unary_set.find(src) != unary_set.end();
 	}
 };
 

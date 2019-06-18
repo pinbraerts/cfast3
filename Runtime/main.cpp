@@ -5,45 +5,43 @@
 using namespace cf;
 using namespace rt;
 
+struct Operation {
+	enum Code {
+		Call,
+		Push,
+	} code;
+};
+
 int main() {
-	//Scope global;
-
-	//Type* cint = global.Add<Type>("Int");
-	//Type* cdouble = global.Add<Type>("Double");
-
-	//Type* _X = global.Add<Type>("X");
-	//_X->Add<Method>("a", cint);
-	//_X->Add<Method>("b", cdouble);
-
-	//std::cout << std::boolalpha;
-	//std::cout << _X->Find("a")->type->name << std::endl;
-	//std::cout << bool(_X->Find("c")) << std::endl;
-
-
 #if 0
-	SyntaxTree tree;
-	std::ifstream input("example.out", std::ios::binary);
-	Lexer l = Lexer::from_file("example.fc");
-	tree.load_binary(input, l.source.begin().ptr());
-	std::cout << tree << std::endl;
+	Scope global;
+
+	Type* cint = global.Declare<Type>("Int");
+	Type* cdouble = global.Declare<Type>("Double");
+
+	Type* _X = global.Declare<Type>("X");
+	_X->Declare<Method>("a", cint);
+	_X->Declare<Method>("b", cdouble);
+
+	std::cout << std::boolalpha;
+	std::cout << _X->Find("a")->type->name << std::endl;
+	std::cout << bool(_X->Find("c")) << std::endl;
 #else
-	Lexer l = Lexer::from_file("..//Analysis//example.fc");
+	Lexer l = Lexer::FromFile("..//Analysis//example.fc");
 	SyntaxTree tree;
 	Parser p(tree, l);
-	Parser::Error e = p.parse();
+	Parser::Error e = p.Parse();
 	if (!e.is_ok())
 		std::cerr << e.message << std::endl;
 	std::cout << tree << std::endl;
 	std::ofstream output("..//Analysis//example.out", std::ios::binary);
-	tree.save_binary(output, l.source.begin().ptr());
-#endif
+	tree.SaveBinary(output, l.source.begin().ptr());
 
-	BoundTree bound;
 	Scope global;
-	Binder b(tree, bound, global);
-	b.Bind();
+	BoundTree b;
+	Binder(tree, b, global).Bind();
+	std::cout << b << std::endl;
 
-	std::cout << bound << std::endl;
-
+#endif
 	return 0;
 }

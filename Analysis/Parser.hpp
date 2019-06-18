@@ -15,7 +15,7 @@ struct Parser {
 	bool eat_lines = false;
 
 	Parser(SyntaxTree& _tree, Lexer& lexer): tree(_tree), iter(lexer.begin()) {
-		tree.push_child(Token::Container); // root
+		tree.PushChild(Token::Container); // root
 	}
 
 	struct Error {
@@ -33,69 +33,65 @@ struct Parser {
 		}
 	};
 
-	void eat_spaces() {
+	void EatSpaces() {
 		for (; iter->type != Token::End &&
 			(
 				iter->type == Token::Space ||
 				(eat_lines && iter->type == Token::Line)
 			); ++iter) {
-			tree.push_child(*iter);
+			tree.PushChild(*iter);
 		}
-		// Use node.working() instead
-		// if (tree.last().children.empty())
-			// tree.push_child(Token::Space);
 		eat_lines = false;
 	}
 
-	void parseQuote() {
+	void ParseQuote() {
 		tree.last() = Token(Token::Quote);
-		const Source opening = tree.push_child(*iter); // opening
-		const TreePtr body = tree | tree.push_child(Token::String); // body
+		const SyntaxNode& opening = tree.PushChild(*iter); // opening
 
-		tree.select(body); // === tree.down(), tree.next()
-		tree.last().begin() = iter->end();
-		for (++iter; iter->type != Token::End &&
-			(iter->type != Token::Quote || *iter != opening); ++iter)
-			if (iter->type == Token::Operator && iter->begin().chr() == '\\')
-				++iter;
-		if (iter->type != Token::Quote)
-			throw Error("quote is not closed");
+		// TODO add string literal features
+		tree.PushChildAndSelect(Token::String); // fill string literal
+			tree.last().begin() = iter->end();
+			for (++iter; iter->type != Token::End &&
+				(iter->type != Token::Quote || *iter != opening); ++iter)
+				if (iter->type == Token::Operator && iter->begin().chr() == '\\')
+					++iter;
+			if (iter->type != Token::Quote)
+				throw Error("quote is not closed");
 
-		tree.last().end() = iter->begin();
+			tree.last().end() = iter->begin();
+		tree.GoUp();
 
-		tree.up();
-		tree.push_child_and_select(Token::Quote); // closure
-		tree.last() = *iter;
-		tree.up();
-		tree.up();
+		tree.PushChild(*iter); // closure
 
+		tree.GoUp();
 		++iter;
 	}
 
-	void parseBody() {
+	void ParseBody() {
 		while (true) {
 			eat_lines = true;
-			tree.push_child_and_select(Token::Space);
-			eat_spaces();
+			tree.PushChildAndSelect(Token::Space);
+			EatSpaces();
 
 			switch (iter->type) {
 			case Token::End:
 				tree.last() = Token::End;
 				while (tree.last().parent != 0)
-					tree.move_up();
+					tree.MoveUp();
 				throw Error::ok();
 			case Token::Operator:
 			{
 				TreePtr container = tree.last().parent;
 				tree.last() = *iter;
-				priority_t p = traits.get_priority(*iter);
+				priority_t p = traits.GetPriority(*iter);
 				tree.last().priority = p;
 
 				if (p != tree[container].priority) {
-					for (; p > tree[container].priority && container; container = tree[container].parent)
-						tree.move_up();
-					if (p != tree[container].priority) {
+					// bubble up to lower priority
+					for (; p > tree[container].priority && container != 0; container = tree[container].parent)
+						tree.MoveUp();
 
+					if (p != tree[container].priority) {
 						auto& ch = tree[container].children;
 						auto i = ch.end();
 						do --i;
@@ -103,35 +99,35 @@ struct Parser {
 						if (tree[*i].priority > p)
 							++i;
 
-						tree.select(tree.insert_capture(i, Token::Container, p));
+						tree.Select(tree.InsertAndCapture(i, Token::Container, p));
 					}
-					else tree.up();
+					else tree.GoUp();
 				}
-				else tree.up();
+				else tree.GoUp();
 				++iter;
 			}
 			break;
 			case Token::CloseBrace:
 				return;
 			case Token::String:
-				parseString();
+				ParseString();
 				break;
 			case Token::Quote:
-				parseQuote();
+				ParseQuote();
 				break;
 			case Token::OpenBrace:
-				parseBraces();
+				ParseBraces();
 				break;
 			case Token::Space:
 			case Token::Container: default:
-				throw Error("unexpected token type: "s + Token::type2str(iter->type));
+				throw Error("unexpected token type: "s + Token::TypeToString(iter->type));
 			case Token::Error:
 				throw Error(std::string(iter->begin().ptr(), iter->end().ptr()));
 			}
 		}
 	}
 
-	Error parse(void(Parser::*f)() = &Parser::parseBody) {
+	Error Parse(void(Parser::*f)() = &Parser::ParseBody) {
 		if (f == nullptr)
 			return Error("Cannot call null parser");
 		try {
@@ -146,31 +142,31 @@ struct Parser {
 		return Error::ok();
 	}
 
-	void parseString() {
+	void ParseString() {
 		tree.last() = *iter;
 		++iter;
-		tree.up();
+		tree.GoUp();
 	}
-	void parseBraces() {
+	void ParseBraces() {
 		tree.last() = Token(Token::Container);
 		tree.last().priority = 100;
-		const TreePtr container = tree.last_position();
-		tree.push_child(*iter, 100); // opening
+		const TreePtr container = tree.LastPosition();
+		tree.PushChild(*iter, 100); // opening
 
 		++iter;
-		//tree.push_child_and_select(Token::Container);
-		parseBody();
-		//tree.up();
-		if (iter->type != Token::CloseBrace) // add open/close check
+		ParseBody();
+
+		if (iter->type != Token::CloseBrace) // TODO add open/close check
 			throw Error("braces is not closed");
 
 		tree.last() = *iter;
+		// return to where it started
 		while (tree.last().parent != container && tree.last().parent != 0)
-			tree.move_up();
+			tree.MoveUp();
 		++iter;
-		tree.up();
+		tree.GoUp();
 		tree.last().priority = 0;
-		tree.up();
+		tree.GoUp();
 	}
 };
 

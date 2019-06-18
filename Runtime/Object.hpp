@@ -45,7 +45,7 @@ struct Scope {
 	}
 
 	template<class T, class... Args>
-	T* Add(Args&& ... args) {
+	T* Declare(Args&& ... args) {
 		return (T*)methods.emplace_back(std::make_unique<T>(std::forward<Args>(args)...)).get();
 	}
 };
@@ -55,14 +55,6 @@ struct Type: Method, Scope {
 		std::string _name = "",
 		Type* meta = nullptr
 	) :	Method(_name, meta) {}	
-};
-
-struct Operation {
-	std::string code;
-};
-
-struct Function: Method {
-	std::vector<Operation> source;
 };
 
 } // namespace cf::rt

@@ -3,7 +3,7 @@
 
 #include <bitset>
 
-#include "../Analysis/Traits.hpp"
+#include "../Analysis/Token.hpp"
 
 namespace cf::rt {
 

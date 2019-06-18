@@ -6,7 +6,7 @@
 
 namespace cf::rt {
 
-struct BoundNode : Node {
+struct BoundNode: Node {
 	Method* method;
 
 	BoundNode(TreePtr parent, Method* _method = nullptr) : Node(parent), method(_method) {}

@@ -30,7 +30,8 @@
     <ClInclude Include="LexerTraits.hpp" />
     <ClInclude Include="SyntaxNode.hpp" />
     <ClInclude Include="Parser.hpp" />
-    <ClInclude Include="Source.hpp" />
+    <ClInclude Include="WeakSpan.hpp" />
+    <ClInclude Include="TextPosition.hpp" />
     <ClInclude Include="Token.hpp" />
     <ClInclude Include="ParserTraits.hpp" />
     <ClInclude Include="Tree.hpp" />

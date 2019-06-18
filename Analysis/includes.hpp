@@ -49,41 +49,41 @@ struct Traits;
 struct Parser;
 
 template<class T>
-void write(std::ostream& stream, const T& x, size_t n = 1) {
+void Write(std::ostream& stream, const T& x, size_t n = 1) {
 	stream.write(reinterpret_cast<const char*>(&x), sizeof(x) * n);
 }
 template<class T>
-void read(std::istream& stream, T& x, size_t n = 1) {
+void Read(std::istream& stream, T& x, size_t n = 1) {
 	stream.read(reinterpret_cast<char*>(&x), sizeof(x) * n);
 }
 
 template<class T>
-void write(std::ostream& stream, const std::vector<T>& vec) {
-	write(stream, vec.size());
+void Write(std::ostream& stream, const std::vector<T>& vec) {
+	Write(stream, vec.size());
 	if (vec.empty()) return;
 	if constexpr (std::is_integral_v<T> || std::is_pod_v<T>) {
-		write(stream, vec.front(), vec.size());
+		Write(stream, vec.front(), vec.size());
 	}
 	else {
 		for (auto& item : vec)
-			item.save_binary(stream);
+			item.SaveBinary(stream);
 	}
 }
 
 template<class T>
-void read(std::istream& stream, std::vector<T>& vec) {
+void Read(std::istream& stream, std::vector<T>& vec) {
 	vec.clear();
 	size_t s;
-	read(stream, s);
+	Read(stream, s);
 	if (s == 0) return;
 	vec.reserve(s);
 	vec.resize(s);
 	if constexpr (std::is_integral_v<T> || std::is_pod_v<T>) {
-		read(stream, vec.front(), vec.size());
+		Read(stream, vec.front(), vec.size());
 	}
 	else {
 		for (auto& item : vec)
-			item.load_binary(stream);
+			item.LoadBinary(stream);
 	}
 }
 
