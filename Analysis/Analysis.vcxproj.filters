@@ -44,7 +44,10 @@
     <ClInclude Include="SyntaxNode.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Traits.hpp">
+    <ClInclude Include="LexerTraits.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ParserTraits.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

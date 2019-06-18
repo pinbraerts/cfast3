@@ -6,7 +6,7 @@
 
 namespace cf {
 
-struct Traits {
+struct ParserTraits {
 	// https://en.cppreference.com/w/cpp/language/operator_precedence
 	std::map<std::string_view, priority_t> priority_map {
 		{ "::", 1 },

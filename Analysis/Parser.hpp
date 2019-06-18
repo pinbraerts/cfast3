@@ -4,14 +4,14 @@
 #include "SyntaxNode.hpp"
 #include "Lexer.hpp"
 #include "Tree.hpp"
-#include "Traits.hpp"
+#include "ParserTraits.hpp"
 
 namespace cf {
 	
 struct Parser {
 	SyntaxTree& tree;
 	Lexer::Iter iter;
-	Traits traits;
+	ParserTraits traits;
 	bool eat_lines = false;
 
 	Parser(SyntaxTree& _tree, Lexer& lexer): tree(_tree), iter(lexer.begin()) {

@@ -27,11 +27,12 @@
   <ItemGroup>
     <ClInclude Include="includes.hpp" />
     <ClInclude Include="Lexer.hpp" />
+    <ClInclude Include="LexerTraits.hpp" />
     <ClInclude Include="SyntaxNode.hpp" />
     <ClInclude Include="Parser.hpp" />
     <ClInclude Include="Source.hpp" />
     <ClInclude Include="Token.hpp" />
-    <ClInclude Include="Traits.hpp" />
+    <ClInclude Include="ParserTraits.hpp" />
     <ClInclude Include="Tree.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
