@@ -10,20 +10,20 @@ struct Binder {
 	BoundTraits traits;
 	const SyntaxTree& syntax;
 	BoundTree& tree;
-	Scope& global;
+	Flow& flow;
 
 	Binder(
 		const SyntaxTree& _syntax,
 		BoundTree& _tree,
-		Scope& _global
+		Flow& _flow
 	) :	syntax(_syntax),
 		tree(_tree),
-		global(_global) {}
+		flow(_flow) {}
 
 	Method* Find(std::string_view s) {
-		Method* m = global.Find(std::string(s));
+		Method* m = flow.Resolve(std::string(s));
 		if (m == nullptr)
-			return global.Declare<Method>(std::string(s));
+			return flow.DeclareMethod(std::string(s));
 		return m;
 	}
 	//Method* Find(const SyntaxNode& node) {
@@ -153,20 +153,60 @@ struct Binder {
 		}
 	}
 
+	void BindQuote(TreePtr p) {
+		const auto& node = syntax[p];
+		size_t first = syntax[node.children[0]].type == Token::Space;
+		std::string string_literal =
+			node.children.size() == 3 + first ?
+				std::string(syntax[node.children[1 + first]]) :
+				"";
+		tree.PushChild(flow.DeclareLiteral(string_literal)); // TODO use another method
+	}
+
+	void BindBraces(TreePtr p) {
+		const SyntaxNode& node = syntax[p];
+		size_t first = syntax[node.children[0]].type == Token::Space;
+		std::string br = std::string(syntax[node.children[first]]) + std::string(syntax[*node.children.rbegin()]);
+		Method* method = Find("operator"s + br);
+
+		// TODO match function call with previous symbol
+		// TODO {} can lead to flow.DeclareTypeAndEnter(...)
+		// TODO operator() [ operator,[ ... ] ] -> operator() [ ... ]
+
+		tree.PushChildAndSelect(method);
+		for (TreePtr i : node.children)
+			Bind(i);
+		tree.GoUp();
+	}
+
 	void Bind(TreePtr p = 0) {
 		const SyntaxNode& node = syntax[p];
+		if(p == 0) {
+			tree.PushChildAndSelect(nullptr);
+			for (TreePtr i : node.children)
+				Bind(i);
+			tree.GoUp();
+			return;
+		}
 		if (node.type == Token::End ||
 			node.type == Token::Space ||
 			node.type == Token::CloseBrace ||
 			node.type == Token::OpenBrace) return;
 		else if (node.children.empty() || (node.children.size() == 1 && syntax[node.children[0]].type == Token::Space)) {
-			tree.PushChild(Find(node));
+			if (isdigit(node.begin().chr()))
+				tree.PushChild(flow.DeclareLiteral(std::stod(std::string(node))));
+			else
+				tree.PushChild(Find(node));
 		}
-		else if(node.priority == 0) { // TODO check if it's a braces or string literal or root element
-			tree.PushChildAndSelect(Find("Braces"));
-			for (TreePtr i : node.children)
-				Bind(i);
-			tree.GoUp();
+		else if(node.priority == 0) { // TODO check if it's a braces or string literal
+			switch (node.type) {
+			case Token::Quote:
+				BindQuote(p);
+				break;
+			case Token::Container:
+				BindBraces(p);
+				break;
+			}
 		}
 		else if (node.priority < 100) { // operator
 			BindOperator(p);
