@@ -1,201 +1,292 @@
-#ifndef CFAST_TREE_HPP
-#define CFAST_TREE_HPP
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
-#include "includes.hpp"
+#include "PoolAllocator.hpp"
+#include "VectorNode.hpp"
 
-namespace cf {
+template<class T> void DeleteTree(T&);
 
-struct Node {
-	TreePtr parent;
-	std::vector<TreePtr> children;
+template<class T,
+    template<class> class A = std::allocator,
+    class N = VectorNode<T, A>>
+class Tree: A<N> {
+public:
+    using Node = N;
+    using Allocator = A<N>;
+    using Item = typename Node::Item;
+    using Children = typename Node::Children;
+    using pointer = typename Allocator::pointer;
+    using reference = typename Allocator::reference;
 
-	Node(TreePtr _parent) noexcept: parent(_parent) {}
+private:
+    pointer _root = 0;
 
-	void SaveBinary(std::ostream& stream) {
-		Write(stream, parent);
-		Write(stream, children);
-	}
-	void LoadBinary(std::istream& stream) {
-		Read(stream, parent);
-		Read(stream, children);
-	}
+public:
+    pointer root() {
+        return _root;
+    }
+    
+    bool empty() const {
+        return _root == 0;
+    }
+    
+    template<class... Args>
+    pointer CreateNode(Args&&... args) {
+        pointer p = Allocator::allocate(1);
+        Allocator::construct(p, EmplaceTag{}, std::forward<Args>(args)...);
+        if(empty())
+            _root = p;
+        return p;
+    }
+    
+    void DeleteNode(pointer p) {
+        if(p == _root)
+            _root = nullptr;
+        Allocator::destroy(p);
+        Allocator::deallocate(p, 1);
+    }
+    
+    static constexpr reference get(pointer p) {
+        return *p;
+    }
+    
+    ~Tree() {
+        DeleteTree(*this);
+    }
 };
 
 template<class T>
-struct Tree {
-	using Pool = std::vector<T>;
-	Pool pool;
-	TreePtr _last = 0;
-
-	T& get(size_t index) {
-		return pool[index];
-	}
-	const T& get(size_t index) const {
-		return pool[index];
-	}
-	T& operator[](size_t index) {
-		return get(index);
-	}
-	const T& operator[](size_t index) const {
-		return get(index);
-	}
-
-	T& root() {
-		return pool.front();
-	}
-	T& last() {
-		return pool[_last];
-	}
-	const T& root() const {
-		return pool.front();
-	}
-	const T& last() const {
-		return pool[_last];
-	}
-
-	template<class... Args>
-	T& PushChild(Args&&... args) {
-		const bool empty = IsEmpty();
-		T& val = pool.emplace_back(_last, std::forward<Args>(args)...);
-		if (!empty)
-			last().children.push_back(ptr(val));
-		return val;
-	}
-	template<class... Args>
-	T& PushChildAndSelect(Args&&... args) {
-		const bool empty = IsEmpty();
-		T& val = pool.emplace_back(_last, std::forward<Args>(args)...);
-		const TreePtr _ptr = ptr(val);
-		if(!empty)
-			last().children.push_back(_ptr);
-		Select(_ptr);
-		return val;
-	}
-	template<class Iter, class... Args>
-	T& InsertAndCapture(Iter first, Iter last, Args&&... args) {
-		TreePtr pp = get(*first).parent;
-		T& res = pool.emplace_back(pp, std::forward<Args>(args)...);
-		T& p = get(pp);
-
-		res.children.insert(
-			res.children.end(),
-			std::move_iterator(first),
-			std::move_iterator(last)
-		);
-		p.children.erase(first, last);
-		p.children.emplace_back(ptr(res));
-
-		for (TreePtr child: res.children) {
-			get(child).parent = ptr(res);
-		}
-
-		return res;
-	}
-	template<class Iter, class... Args>
-	T& InsertAndCapture(Iter first, Args&& ... args) {
-		TreePtr pp = get(*first).parent;
-		T& res = pool.emplace_back(pp, std::forward<Args>(args)...);
-		T& p = get(pp);
-		return InsertAndCapture(first, p.children.end(), std::forward<Args>(args)...);
-	}
-	template<class... Args>
-	T& MoveUp() {
-		T& parent = get(last().parent);
-		T& pparent = get(last().parent = parent.parent);
-		pparent.children.push_back(LastPosition());
-		parent.children.erase(std::remove(parent.children.begin(), parent.children.end(), LastPosition()));
-		return last();
-	}
-	void SwapChildren(TreePtr a, TreePtr b) {
-		SyntaxNode& x = pool[a], &y = pool[b];
-		for (TreePtr i: x.children)
-			pool[i].parent = b;
-		for (TreePtr i: y.children)
-			pool[i].parent = a;
-		std::swap(x.children, y.children);
-	}
-	void SwapItems(TreePtr a, TreePtr b) {
-		SwapChildren(a, b);
-		std::swap(pool[a], pool[b]);
-	}
-
-	TreePtr operator|(const T& x) const {
-		return ptr(x);
-	}
-
-	bool IsEmpty() const noexcept {
-		return pool.empty();
-	}
-
-	void GoUp() {
-		_last = last().parent;
-	}
-	size_t ptr(const T& x) const {
-		return &x - &root();
-	}
-	void Select(const T& x) {
-		_last = ptr(x);
-	}
-	void Select(TreePtr x) noexcept {
-		_last = x;
-	}
-	TreePtr LastPosition() noexcept {
-		return _last;
-	}
-
-	void SaveBinary(std::ostream& stream, const char* buffer) {
-		size_t offs = (size_t)buffer;
-		Write(stream, pool.size());
-		for (auto node : pool) {
-			node.begin().ptr() -= offs;
-			node.end().ptr() -= offs;
-			node.SaveBinary(stream);
-		}
-	}
-
-	void LoadBinary(std::istream& stream, const char* buffer) {
-		size_t offs = size_t(buffer);
-		_last = 0;
-		Read(stream, pool);
-		for (auto& node : pool) {
-			node.begin().ptr() += offs;
-			node.end().ptr() += offs;
-		}
-	}
+class Tree<T, PoolAllocator, VectorNode<T, PoolAllocator>>: PoolAllocator<VectorNode<T, PoolAllocator>> {
+public:
+    using Node = VectorNode<T, PoolAllocator>;
+    using Allocator = PoolAllocator<VectorNode<T, PoolAllocator>>;
+    using Item = typename Node::Item;
+    using Children = typename Node::Children;
+    using pointer = typename Allocator::pointer;
+    using reference = typename Allocator::reference;
+    
+    constexpr static pointer root() {
+        return 0;
+    }
+    
+    bool empty() const {
+        return Allocator::_pool.empty();
+    }
+    
+    template<class... Args>
+    pointer CreateNode(Args&&... args) {
+        pointer p = Allocator::allocate(1);
+        Allocator::construct(p, EmplaceTag{}, std::forward<Args>(args)...);
+        return p;
+    }
+    
+    void DeleteNode(pointer p) {
+        Allocator::destroy(p);
+        Allocator::deallocate(p, 1);
+    }
+    
+    using Allocator::get;
+    
+    ~Tree() = default;
 };
 
 template<class T>
-struct TreePrinter {
-	const Tree<T>& tree;
-	std::ostream& stream;
-	size_t depth;
+class TreeWalker {
+public:
+    using Tree = T;
+    using Node = typename Tree::Node;
+    using Item = typename Tree::Item;
+    using Children = typename Tree::Children;
+    using pointer = typename Tree::pointer;
+    using reference = typename Tree::reference;
 
-	TreePrinter(const Tree<T>& _tree, std::ostream& _stream) noexcept: tree(_tree), depth(0), stream(_stream) {}
+private:
+    Tree& _tree;
+    std::vector<pointer> _parents;
 
-	void Print(const T& t) {
-		if (&tree.last() == &t) stream << std::string((depth <= 1 ? 0 : depth - 1) * 4, ' ') << ">>> ";
-		else stream << std::string(depth * 4, ' ');
-		stream << t;
-		if (t.children.empty()) {
-			stream << std::endl;
-			return;
-		}
-		stream << " [" << std::endl;
-		++depth;
-		for (TreePtr i: t.children)
-			Print(tree[i]);
-		--depth;
-		stream << std::string(depth * 4, ' ') << "]" << std::endl;
-	}
+public:    
+    reference get(pointer p) {
+        return _tree.get(p);
+    }
+    pointer current_pointer() {
+        return _parents.back();
+    }
+    reference current() {
+        return get(current_pointer());
+    }
+    reference root() {
+        return get(_parents.front());
+    }
+    Tree& tree() {
+        return _tree;
+    }
+
+    TreeWalker(Tree& tree): _tree(tree) {
+        if(!tree.empty())
+            _parents.push_back(tree.root());
+    }
+    TreeWalker(TreeWalker&&) = default;
+    TreeWalker(const TreeWalker&) = default;
+    
+    size_t depth() const {
+        return _parents.size();
+    }
+    bool empty() const {
+        return _parents.empty();
+    }
+    
+    void Select(pointer p) {
+        _parents.push_back(p);
+    }
+    void PushChild(pointer p) {
+        current().children.push_back(p);
+    }
+    template<class... Args>
+    pointer EmplaceChild(Args&&... args) {
+        pointer i = _tree.CreateNode(std::forward<Args>(args)...);
+        if(!empty())
+            PushChild(i);
+        return i;
+    }
+    
+    template<class... Args>
+    pointer EmplaceChildAndSelect(Args&&... args) {
+        pointer i = EmplaceChild(std::forward<Args>(args)...);
+        Select(i);
+        return i;
+    }
+    
+    void CutChildren() {
+        if(empty() || current().children.empty())
+            return;
+        for(pointer p: current().children) {
+            Select(p);
+            CutChildren();
+            GoUp();
+            _tree.DeleteNode(p); // keep nullptr in children...
+        }
+        current().children.clear(); // ...then clear them all
+    }
+    void GoUp() {
+        _parents.pop_back();
+    }
+    void GoToRoot() {
+        _parents.resize(1);
+    }
+    bool TryGoUp() {
+        if(depth() <= 1) // if used in while, _parents always contains at least one element, so it's allowed to push children (or none if it had non before)
+            return false;
+        GoUp();
+        return true;
+    }
 };
 
+#ifdef __cplusplus
+#if __cplusplus == 201703L
+
+template<class T> TreeWalker(T&) -> TreeWalker<T>;
+
+#endif // __cplusplus == 201703L
+#endif // __cplusplus
+
 template<class T>
-std::ostream& operator<<(std::ostream& stream, const Tree<T>& a) {
-	if (a.IsEmpty()) return stream;
-	TreePrinter<T>(a, stream).Print(a.root());
-	return stream;
+void DeleteTree(T& t) {
+    if(!t.empty()) {
+        TreeWalker<T>(t).CutChildren();
+        t.DeleteNode(t.root());
+    }
 }
 
-} // namespace cf
+template<class T, class A, class I>
+std::vector<T, A> MoveItems(std::vector<T, A>& vec, I first, I last) {
+    if(first == vec.begin() && last == vec.end()) {
+       return std::move(vec);
+   }
+    
+   std::vector<T, A> res;
+   
+   std::copy(
+        std::make_move_iterator(first),
+        std::make_move_iterator(last),
+        std::back_inserter(res)
+    );
+    vec.erase(first, last);
+    return res;
+}
 
-#endif // !CFAST_TREE_HPP
+template<class N>
+void PrintItem(std::ostream& s, const N& item) {
+    s << item;
+}
+
+template<class T, class F=decltype(&PrintItem<typename T::Item>)>
+struct TreePrinter {
+    using Tree = T;
+    using Node = typename Tree::Node;
+    using Item = typename Tree::Item;
+    using pointer = typename Tree::pointer;
+    
+private:
+    Tree& _tree;
+    std::ostream& _stream;
+    F f;
+    
+    void _print(pointer p, size_t depth) {
+        Node& x = _tree.get(p);
+        std::string prefix(depth * 2, ' ');
+        _stream << prefix;
+        f(_stream, x.item);
+        if(x.children.empty()) {
+            _stream << std::endl;
+            return;
+        }
+        _stream << ' ' << '{' << std::endl;
+        for(pointer i: x.children) {
+            _print(i, depth + 1);
+        }
+        _stream << prefix << '}' << std::endl;
+    }
+    
+public:
+    TreePrinter(Tree& tree, std::ostream& stream, F p = &PrintItem<Item>): _tree(tree), _stream(stream), f(p) {}
+
+    void print() {
+        _print(_tree.root(), 0);
+    }
+};
+
+void TestTree() {
+    Tree<int, std::allocator> t;
+    TreeWalker<decltype(t)> w(t);
+    
+    std::string delim(10, '=');
+    auto log = [&] (std::string msg) {
+        std::cout << delim << ' ' << msg << ' ' << delim << std::endl;
+        TreePrinter<decltype(t)>(t, std::cout).print();
+        std::cout << std::endl;
+    };
+    
+    w.EmplaceChildAndSelect(0);
+        w.EmplaceChildAndSelect(1);
+            w.EmplaceChild(2);
+            w.EmplaceChild(3);
+        w.GoUp();
+        
+        w.EmplaceChildAndSelect(4);
+            w.EmplaceChild(5);
+            w.EmplaceChildAndSelect(6);
+                w.EmplaceChild(7);
+            w.GoUp();
+    
+    log("Initialized tree");
+    
+    auto p = t.CreateNode(8);
+    auto& n = t.get(p);
+    auto& c = w.current().children;
+    n.children = MoveItems(c, c.begin(), c.end());
+    
+    w.PushChild(p);
+    
+    log("Captured item");
+}

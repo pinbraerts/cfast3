@@ -1,60 +1,54 @@
 #ifndef CFAST_TOKEN_HPP
 #define CFAST_TOKEN_HPP
 
-#include "TextPosition.hpp"
+template<class T>
+struct Token {
+public:
+    using Index = typename T::Index;
+    using Type = typename T::Type;
+    
+private:
+    Type _type;
+    Index _begin, _end;
+    
+public:
+    Token(): Token(Type::End) { }
+    Token(Type t): _type(t), _begin(0), _end(0) { }
+    Token(Type t, Index b): _type(t), _begin(b), _end(b) { }
+    Token(Type t, Index b, Index e): _type(t), _begin(b), _end(e) { }
+    Token(const Token&) = default;
+    Token(Token&&) = default;
+    
+    Token& operator=(const Token&) = default;
+    Token& operator=(Token&&) = default;
 
-namespace cf {
-
-struct Token: Source {
-	enum Type {
-		End,
-		Space,
-		Line,
-		Operator,
-		String,
-		Quote,
-		OpenBrace,
-		CloseBrace,
-		Container,
-		Error,
-	} type;
-
-	Token(Type t) noexcept: type(t) {}
-	Token(Type t, TextPosition first, TextPosition last) noexcept: type(t), Source(first, last) {}
-
-	static Token eof() noexcept {
-		return Token(Type::End);
-	}
-
-	constexpr static const char* TypeToString(Type type) {
-		switch (type) {
-		case Type::OpenBrace: case Type::CloseBrace:
-			return "Brace";
-		case Type::End: return "End";
-		case Type::Line: return "Line";
-		case Type::Operator:
-			return "Operator";
-		case Type::Quote: return "Quote";
-		case Type::Space: return "Space";
-		case Type::String: return "String";
-		case Type::Container: return "Container";
-		case Type::Error: return "Error";
-		default: return "Unknown";
-		}
-	}
-
-	void SaveBinary(std::ostream& stream) {
-		Write(stream, *this);
-	}
-	void LoadBinary(std::istream& stream) {
-		Read(stream, *this);
-	}
+    Index begin() const {
+        return _begin;
+    }
+    void begin(Index v) {
+        _begin = v;
+    }
+    
+    Index end() const {
+        return _end;
+    }
+    void end(Index v) {
+        _end = v;
+    }
+    
+    Type type() const {
+        return _type;
+    }
+    void type(Type t) {
+        _type = t;
+    }
+    
+    size_t size() const {
+        return _end - _begin;
+    }
+    bool empty() const {
+        return _end <= _begin;
+    }
 };
-
-std::ostream& operator<<(std::ostream& stream, const Token& token) {
-	return (stream << Token::TypeToString(token.type) << " \'").write(token.begin().ptr(), token.Size()) << '\'';
-}
-
-} // namespace cf
 
 #endif // !CFAST_TOKEN_HPP

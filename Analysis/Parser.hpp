@@ -1,175 +1,237 @@
 #ifndef CFAST_PARSER_HPP
 #define CFAST_PARSER_HPP
 
-#include "SyntaxNode.hpp"
 #include "Lexer.hpp"
 #include "Tree.hpp"
-#include "ParserTraits.hpp"
+#include "Syntax.hpp"
+#include "SyntaxTraits.hpp"
 
-namespace cf {
-	
-struct Parser {
-	SyntaxTree& tree;
-	Lexer::Iter iter;
-	ParserTraits traits;
-	bool eat_lines = false;
+template<class L,
+    class R = SyntaxTraits<L>,
+    class N = Syntax<R>,
+    class T = Tree<N, PoolAllocator>>
+class Parser {
+public:
+    using Lexer = L;
+    using Tree = T;
+    using Walker = TreeWalker<Tree>;
+    using pointer = typename Walker::pointer;
+    using Syntax = N;
+    using SyntaxNode = typename Walker::Node;
+    using Token = typename R::Token;
+    using Type = typename Syntax::Type;
+    using Traits = R;
+    using View = typename Traits::View;
+    using Priority = typename Syntax::Priority;
 
-	Parser(SyntaxTree& _tree, Lexer& lexer): tree(_tree), iter(lexer.begin()) {
-		tree.PushChild(Token::Container); // root
-	}
+public:
+    Lexer& _lexer;
+    Walker _walker;
+    pointer _spaces;
+    Token _current;
+    View _current_view;
+    Traits _traits;
+    bool eat_lines = true;
+    
+    Type type() const {
+        return (Type)(size_t)_current.type();
+    }
+    
+    void Next() {
+        _current = _lexer.Next();
+        _current_view = _lexer.view(_current);
+    }
+    
+    void PushSpaces() {
+        if(_spaces != pointer()) {
+            _walker.PushChild(_spaces);
+            _spaces = pointer();
+        }
+    }
+    
+    void PushCurrent() {
+        _walker.EmplaceChild(_current);
+    }
+    
+    void PushCurrentAndSpaces(Priority p) {
+        _walker.EmplaceChildAndSelect(_current, p);
+        PushSpaces();
+        _walker.GoUp();
+    }
+    
+    void PushCurrentAndSpaces() {
+        _walker.EmplaceChildAndSelect(_current);
+        PushSpaces();
+        _walker.GoUp();
+    }
 
-	struct Error {
-		std::string message;
+public:
+    Parser(
+        Lexer& lexer,
+        Tree& tree,
+        Traits traits = Traits{}
+    ) : _lexer(lexer),
+        _walker(tree),
+        _spaces(),
+        _current(),
+        _current_view(),
+        _traits(traits) { }
 
-		Error(std::string msg) noexcept: message(std::move(msg)) {}
-		Error() = default;
+    void EatSpaces() {
+        _spaces = _walker.tree().CreateNode(Type::ContainerSpace);
+        _walker.Select(_spaces);
+        for (Next(); type() != Type::End &&
+            (
+                type() == Type::Space ||
+                (eat_lines && type() == Type::Line)
+            ); Next()) {
+            PushCurrent();
+        }
+        if(_walker.current().children.empty()) {
+            _walker.tree().DeleteNode(_spaces);
+            _spaces = pointer();
+        }
+        _walker.GoUp();
+        eat_lines = true;// TODO false;
+    }
+    
+    void ParseString() {
+        PushCurrentAndSpaces();
+    }
+    
+    void ParseOperator() {
+        Priority p = _traits.GetPriority(_current_view);
+            
+        // bubble up until lower or equal priority
+        while(p > _walker.current().item.priority() && _walker.TryGoUp())
+            ;
+        if (p != _walker.current().item.priority() && !_walker.current().children.empty()) {
+            // create node here because ch and i can be invalidated
+            pointer ptr = _walker.tree().CreateNode(Type::ContainerOperator, p);
+                     
+            auto& ch = _walker.current().children;
+            auto i = ch.end() - 1, b = ch.begin();
 
-		static Error ok() noexcept {
-			return Error();
-		}
+            while (b < i && (_walker.get(*i).item.priority() <= p)) --i;
+            if (_walker.get(*i).item.priority() > p)
+                ++i;
 
-		bool is_ok() const noexcept {
-			return message.empty();
-		}
-	};
+            _walker.get(ptr).children = MoveItems(ch, i, ch.end());
+            _walker.PushChild(ptr);
+            _walker.Select(ptr);
+        }
+                
+        PushCurrentAndSpaces(p);
+        
+        eat_lines = true;
+    }
+    
+    void ParseBody() {
+        while (true) {
+            EatSpaces();
 
-	void EatSpaces() {
-		for (; iter->type != Token::End &&
-			(
-				iter->type == Token::Space ||
-				(eat_lines && iter->type == Token::Line)
-			); ++iter) {
-			tree.PushChild(*iter);
-		}
-		eat_lines = false;
-	}
+            switch (type()) {
+            case Type::End:
+                _walker.GoToRoot();
+                PushSpaces();
+                //PushCurrentAndSpaces();
+                throw 0;
+            case Type::Operator:
+                ParseOperator();
+                break;
+            case Type::CloseBrace:
+                return;
+            case Type::String:
+                ParseString();
+                break;
+            case Type::Quote:
+                ParseQuote();
+                break;
+            case Type::OpenBrace:
+                ParseBraces();
+                break;
+            case Type::Line: // TODO
+            default:
+                throw std::runtime_error(std::string("unexpected token type ") + std::string(ToString(type())));
+            }
+        }
+    }
+    
+    void ParseBraces() {
+        pointer container = _walker.EmplaceChildAndSelect(Type::ContainerBrace);
+        PushCurrentAndSpaces(); // opening
+        
+        //Next();
+        ParseBody();
+        
+        if(type() != Type::CloseBrace)
+            throw std::runtime_error("No close brace");
+        
+        // return to where it started
+        while(_walker.current_pointer() != container && _walker.TryGoUp());
+        
+        if(_walker.current_pointer() != container)
+            throw std::runtime_error("Cannot return back");
+        
+        PushCurrentAndSpaces(); // closure
+        _walker.current().item.priority(0); // after closure container should have priority of value
+        _walker.GoUp();
+    }
+    
+    void ParseQuote() {
+        _walker.EmplaceChildAndSelect(Type::ContainerQuote);
+        std::string_view opening = _current_view;
+        PushCurrentAndSpaces();
 
-	void ParseQuote() {
-		tree.last() = Token(Token::Quote);
-		const SyntaxNode& opening = tree.PushChild(*iter); // opening
+        // TODO add string literal features
+        _walker.EmplaceChildAndSelect(Type::String); // fill string literal
+        _walker.current().item.begin(_current.end());
+        for (Next(); type() != Type::End &&
+            (type() != Type::Quote || _current_view != opening); Next())
+            if (type() == Type::Operator && _current_view[0] == '\\')
+                Next();
+        if (type() != Type::Quote)
+            throw std::runtime_error("quote is not closed");
 
-		// TODO add string literal features
-		tree.PushChildAndSelect(Token::String); // fill string literal
-			tree.last().begin() = iter->end();
-			for (++iter; iter->type != Token::End &&
-				(iter->type != Token::Quote || *iter != opening); ++iter)
-				if (iter->type == Token::Operator && iter->begin().chr() == '\\')
-					++iter;
-			if (iter->type != Token::Quote)
-				throw Error("quote is not closed");
+        _walker.current().item.end(_current.begin());
+        _walker.GoUp();
 
-			tree.last().end() = iter->begin();
-		tree.GoUp();
+        PushCurrent(); // closure
 
-		tree.PushChild(*iter); // closure
-
-		tree.GoUp();
-		++iter;
-	}
-
-	void ParseBody() {
-		while (true) {
-			eat_lines = true;
-			tree.PushChildAndSelect(Token::Space);
-			EatSpaces();
-
-			switch (iter->type) {
-			case Token::End:
-				tree.last() = Token::End;
-				while (tree.last().parent != 0)
-					tree.MoveUp();
-				throw Error::ok();
-			case Token::Operator:
-			{
-				TreePtr container = tree.last().parent;
-				tree.last() = *iter;
-				priority_t p = traits.GetPriority(*iter);
-				tree.last().priority = p;
-
-				if (p != tree[container].priority) {
-					// bubble up to lower priority
-					for (; p > tree[container].priority && container != 0; container = tree[container].parent)
-						tree.MoveUp();
-
-					if (p != tree[container].priority) {
-						auto& ch = tree[container].children;
-						auto i = ch.end();
-						do --i;
-						while (ch.begin() < i && (tree[*i].priority <= p));
-						if (tree[*i].priority > p)
-							++i;
-
-						tree.Select(tree.InsertAndCapture(i, Token::Container, p));
-					}
-					else tree.GoUp();
-				}
-				else tree.GoUp();
-				++iter;
-			}
-			break;
-			case Token::CloseBrace:
-				return;
-			case Token::String:
-				ParseString();
-				break;
-			case Token::Quote:
-				ParseQuote();
-				break;
-			case Token::OpenBrace:
-				ParseBraces();
-				break;
-			case Token::Space:
-			case Token::Container: default:
-				throw Error("unexpected token type: "s + Token::TypeToString(iter->type));
-			case Token::Error:
-				throw Error(std::string(iter->begin().ptr(), iter->end().ptr()));
-			}
-		}
-	}
-
-	Error Parse(void(Parser::*f)() = &Parser::ParseBody) {
-		if (f == nullptr)
-			return Error("Cannot call null parser");
-		try {
-			(this->*f)();
-		}
-		catch (const Error& e) {
-			return e;
-		}
-		catch (const std::exception& e) {
-			return Error(e.what());
-		}
-		return Error::ok();
-	}
-
-	void ParseString() {
-		tree.last() = *iter;
-		++iter;
-		tree.GoUp();
-	}
-	void ParseBraces() {
-		tree.last() = Token(Token::Container);
-		tree.last().priority = 100;
-		const TreePtr container = tree.LastPosition();
-		tree.PushChild(*iter, 100); // opening
-
-		++iter;
-		ParseBody();
-
-		if (iter->type != Token::CloseBrace) // TODO add open/close check
-			throw Error("braces is not closed");
-
-		tree.last() = *iter;
-		// return to where it started
-		while (tree.last().parent != container && tree.last().parent != 0)
-			tree.MoveUp();
-		++iter;
-		tree.GoUp();
-		tree.last().priority = 0;
-		tree.GoUp();
-	}
+        _walker.GoUp();
+    }
+    
+    std::string Parse() {
+        try {
+            _walker.EmplaceChildAndSelect(); // root
+            ParseBody();
+        }
+        catch(const std::runtime_error& e) {
+            return e.what();
+        }
+        catch(int) { }
+        return std::string();
+    }
 };
 
-} // namespace cf
+void TestParser() {
+    auto b = Buffer<char>::FromFile("Parser.hpp");
+    Lexer<char> l(b);
+    Parser<decltype(l)>::Tree t;
+    Parser<decltype(l)> p(l, t);
+    auto res = p.Parse();
+    if(!res.empty()) {
+        std::cerr << res << std::endl;
+        return;
+    }
+    
+    auto print = [&](std::ostream& s, const typename decltype(t)::Item& x) {
+        auto w = std::string_view(b.get(x.begin()), x.size());
+        s << ToString(x.type()) << ' ' << x.priority();
+        if(!w.empty())
+            s << ' ' << '\'' << w << '\'';
+    };
+    TreePrinter<decltype(t), decltype(print)>(t, std::cout, print).print();
+}
 
 #endif // !CFAST_PARSER_HPP
