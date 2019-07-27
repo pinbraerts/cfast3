@@ -16,34 +16,25 @@ public:
     using TokenType = typename R::TokenType;
     using Token = typename R::Token;
     using Priority = typename R::Priority;
+    
+    Priority priority;
 
-private:
-    Priority _priority;
-
-public:
-    Syntax(): base(), _priority(0) { }
-    Syntax(Type t): base(t), _priority(0) { }
-    Syntax(Type t, Priority p): base(t), _priority(p) { }
+    Syntax(): base(), priority(0) { }
+    Syntax(Type t): base(t), priority(0) { }
+    Syntax(Type t, Priority p): base(t), priority(p) { }
     
-    Syntax(Token t): base((Type)(size_t)t.type(), t.begin(), t.end()), _priority(0) { }
-    Syntax(Token t, Priority p): base((Type)(size_t)t.type(), t.begin(), t.end()), _priority(p) { }
+    Syntax(Token t): base((Type)(size_t)t.type(), t.begin(), t.end()), priority(0) { }
+    Syntax(Token t, Priority p): base((Type)(size_t)t.type(), t.begin(), t.end()), priority(p) { }
     
-    using base::operator=;
+    /*using base::operator=;*/
     
-    Syntax& operator=(Token t) {
+    /*Syntax& operator=(Token t) {
         type((Type)(size_t)t.type());
         begin(t.begin());
         end(t.end());
-        priority(0);
+        priority = 0;
         return *this;
-    }
-    
-    Priority priority() const {
-        return _priority;
-    }
-    void priority(Priority p) {
-        _priority = p;
-    }
+    }*/
     
     operator base&() {
         return *this;

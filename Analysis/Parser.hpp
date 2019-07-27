@@ -66,7 +66,7 @@ public:
         _current_priority = _traits.GetPriority(_current_view);
             
         // bubble up until lower or equal priority
-        while(_current_priority > _walker.current().item.priority() && _walker.TryGoUp())
+        while(_current_priority > _walker.current().item.priority && _walker.TryGoUp())
             ;
     }
 
@@ -106,12 +106,12 @@ public:
     }
     
     void ParseOperator() noexcept {
-        if (_current_priority != _walker.current().item.priority() && !_walker.current().children.empty()) {    
+        if (_current_priority != _walker.current().item.priority && !_walker.current().children.empty()) {    
             auto& ch = _walker.current().children;
             auto i = ch.end() - 1, b = ch.begin();
 
-            while (b < i && (_walker.get(*i).item.priority() <= _current_priority)) --i;
-            if (_walker.get(*i).item.priority() > _current_priority)
+            while (b < i && (_walker.get(*i).item.priority <= _current_priority)) --i;
+            if (_walker.get(*i).item.priority > _current_priority)
                 ++i;
             
             auto moved = MoveItems(ch, i, ch.end());
@@ -127,7 +127,7 @@ public:
     void ParseClosure() noexcept {
         // TODO match with opening brace
         PushCurrentAndSpaces(); // closure
-        _walker.current().item.priority(0); // after closure container should have priority of value
+        _walker.current().item.priority = 0; // after closure container should have priority of value
         _walker.GoUp();
     }
     
@@ -213,7 +213,7 @@ void TestParser() {
     
     auto print = [&](std::ostream& s, const typename decltype(t)::Item& x) {
         auto w = std::string_view(b.get(x.begin()), x.size());
-        s << ToString(x.type()) << ' ' << x.priority();
+        s << ToString(x.type()) << ' ' << x.priority;
         if(!w.empty())
             s << ' ' << '\'' << w << '\'';
     };
