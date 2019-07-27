@@ -19,21 +19,13 @@ public:
 
 private:
     Priority _priority;
-    
-    constexpr static Priority DefaultPriority(Type t) {
-        switch(t) {
-        case Type::OpenBrace: return 100;
-        case Type::ContainerBrace: return 100;
-        default: return 0;
-        }
-    }
 
 public:
-    Syntax(): base(), _priority(DefaultPriority(type())) { }
-    Syntax(Type t): base(t), _priority(DefaultPriority(t)) { }
+    Syntax(): base(), _priority(0) { }
+    Syntax(Type t): base(t), _priority(0) { }
     Syntax(Type t, Priority p): base(t), _priority(p) { }
     
-    Syntax(Token t): base((Type)(size_t)t.type(), t.begin(), t.end()), _priority(DefaultPriority(type())) { }
+    Syntax(Token t): base((Type)(size_t)t.type(), t.begin(), t.end()), _priority(0) { }
     Syntax(Token t, Priority p): base((Type)(size_t)t.type(), t.begin(), t.end()), _priority(p) { }
     
     using base::operator=;
@@ -42,7 +34,7 @@ public:
         type((Type)(size_t)t.type());
         begin(t.begin());
         end(t.end());
-        priority(DefaultPriority(type()));
+        priority(0);
         return *this;
     }
     
