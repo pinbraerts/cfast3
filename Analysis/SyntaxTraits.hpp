@@ -81,14 +81,6 @@ private:
         { "{", 0 }, { "}", 18 }
     };
 
-    std::set<View> assignment_set {
-        "=", "+=", "-=", "*=", "/=", "%=", ">>=", "<<=", "&=", "^=", "|="
-    };
-
-    std::set<View> unary_set {
-        "++", "--", "!", "~"
-    };
-
 public:
     Priority GetPriority(View src) const {
         if (auto iter = priority_map.find(src); iter != priority_map.end())
@@ -96,12 +88,8 @@ public:
         else return 0;
     }
 
-    bool IsAssignment(View src) const {
-        return assignment_set.find(src) != assignment_set.end();
-    }
-
-    bool IsUnary(View src) const {
-        return unary_set.find(src) != unary_set.end();
+    static constexpr bool IsEscape(View v) {
+        return !v.empty() && v[0] == '\\';
     }
 };
 

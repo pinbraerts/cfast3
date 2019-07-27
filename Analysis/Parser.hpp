@@ -183,7 +183,7 @@ public:
         _walker.current().item.begin(_current.end());
         for (Next(); type() != TokenType::End &&
             (type() != TokenType::Quote || _current_view != opening); Next())
-            if (type() == TokenType::Operator && _current_view[0] == '\\')
+            if (_traits.IsEscape(_current_view))
                 Next();
         if (type() != TokenType::Quote)
             return err("quote is not closed");
@@ -203,7 +203,7 @@ public:
 };
 
 void TestParser() {
-    auto b = Buffer<char>::FromFile("example.fc");
+    auto b = Buffer<char>::FromFile("Parser.hpp");
     Lexer<char> l(b);
     Parser<decltype(l)>::Tree t;
     Parser<decltype(l)> p(l, t);
