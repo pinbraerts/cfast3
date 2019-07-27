@@ -27,11 +27,14 @@ public:
 public:
     Lexer& _lexer;
     Walker _walker;
-    pointer _spaces;
-    Token _current;
-    View _current_view;
     Traits _traits;
+    
+    pointer _spaces = pointer{};
     bool eat_lines = true;
+    Token _current = Token{};
+    View _current_view = View{};
+    Priority _current_priority = Priority{};
+    std::string _current_error = std::string{};
     
     Type type() const {
         return (Type)(size_t)_current.type();
@@ -53,16 +56,18 @@ public:
         _walker.EmplaceChild(_current);
     }
     
-    void PushCurrentAndSpaces(Priority p) {
-        _walker.EmplaceChildAndSelect(_current, p);
+    void PushCurrentAndSpaces() {
+        _walker.EmplaceChildAndSelect(_current, _current_priority);
         PushSpaces();
         _walker.GoUp();
     }
     
-    void PushCurrentAndSpaces() {
-        _walker.EmplaceChildAndSelect(_current);
-        PushSpaces();
-        _walker.GoUp();
+    void BubblePriority() {
+        _current_priority = _traits.GetPriority(_current_view);
+            
+        // bubble up until lower or equal priority
+        while(_current_priority > _walker.current().item.priority() && _walker.TryGoUp())
+            ;
     }
 
 public:
@@ -72,12 +77,13 @@ public:
         Traits traits = Traits{}
     ) : _lexer(lexer),
         _walker(tree),
-        _spaces(),
-        _current(),
-        _current_view(),
         _traits(traits) { }
+    
+    void err(std::string msg) noexcept {
+        _current_error = msg;
+    }
 
-    void EatSpaces() {
+    void EatSpaces() noexcept {
         _spaces = _walker.tree().CreateNode(Type::ContainerSpace);
         _walker.Select(_spaces);
         for (Next(); type() != Type::End &&
@@ -95,90 +101,77 @@ public:
         eat_lines = true;// TODO false;
     }
     
-    void ParseString() {
+    void ParseString() noexcept {
         PushCurrentAndSpaces();
     }
     
-    void ParseOperator() {
-        Priority p = _traits.GetPriority(_current_view);
-            
-        // bubble up until lower or equal priority
-        while(p > _walker.current().item.priority() && _walker.TryGoUp())
-            ;
-        if (p != _walker.current().item.priority() && !_walker.current().children.empty()) {
-            // create node here because ch and i can be invalidated
-            pointer ptr = _walker.tree().CreateNode(Type::ContainerOperator, p);
-                     
+    void ParseOperator() noexcept {
+        if (_current_priority != _walker.current().item.priority() && !_walker.current().children.empty()) {    
             auto& ch = _walker.current().children;
             auto i = ch.end() - 1, b = ch.begin();
 
-            while (b < i && (_walker.get(*i).item.priority() <= p)) --i;
-            if (_walker.get(*i).item.priority() > p)
+            while (b < i && (_walker.get(*i).item.priority() <= _current_priority)) --i;
+            if (_walker.get(*i).item.priority() > _current_priority)
                 ++i;
-
-            _walker.get(ptr).children = MoveItems(ch, i, ch.end());
-            _walker.PushChild(ptr);
-            _walker.Select(ptr);
+            
+            auto moved = MoveItems(ch, i, ch.end());
+            _walker.EmplaceChildAndSelect(Type::ContainerOperator, _current_priority);
+            _walker.current().children = std::move(moved);
         }
                 
-        PushCurrentAndSpaces(p);
+        PushCurrentAndSpaces();
         
         eat_lines = true;
     }
     
-    void ParseBody() {
-        while (true) {
+    void ParseClosure() noexcept {
+        // TODO match with opening brace
+        PushCurrentAndSpaces(); // closure
+        _walker.current().item.priority(0); // after closure container should have priority of value
+        _walker.GoUp();
+    }
+    
+    std::string ParseBody() noexcept {
+        while (_current_error.empty()) {
             EatSpaces();
+            BubblePriority();
 
             switch (type()) {
             case Type::End:
                 _walker.GoToRoot();
                 PushSpaces();
-                //PushCurrentAndSpaces();
-                throw 0;
+                return std::string();
             case Type::Operator:
                 ParseOperator();
                 break;
+            case Type::OpenBrace:
+                ParseOpening();
+                break;
             case Type::CloseBrace:
-                return;
+                ParseClosure();
+                break;
             case Type::String:
                 ParseString();
                 break;
             case Type::Quote:
                 ParseQuote();
                 break;
-            case Type::OpenBrace:
-                ParseBraces();
-                break;
             case Type::Line: // TODO
             default:
-                throw std::runtime_error(std::string("unexpected token type ") + std::string(ToString(type())));
+                err(std::string("unexpected token type ") + std::string(ToString(type())));
             }
         }
+        return _current_error;
     }
     
-    void ParseBraces() {
-        pointer container = _walker.EmplaceChildAndSelect(Type::ContainerBrace);
-        PushCurrentAndSpaces(); // opening
-        
-        //Next();
-        ParseBody();
-        
-        if(type() != Type::CloseBrace)
-            throw std::runtime_error("No close brace");
-        
-        // return to where it started
-        while(_walker.current_pointer() != container && _walker.TryGoUp());
-        
-        if(_walker.current_pointer() != container)
-            throw std::runtime_error("Cannot return back");
-        
-        PushCurrentAndSpaces(); // closure
-        _walker.current().item.priority(0); // after closure container should have priority of value
+    void ParseOpening() noexcept {
+        // TODO do not hardcore priority
+        _walker.EmplaceChildAndSelect(Type::ContainerBrace, 18);
+        _walker.EmplaceChildAndSelect(_current, 18); // opening should have max priority in order not to be captured
         _walker.GoUp();
     }
     
-    void ParseQuote() {
+    void ParseQuote() noexcept {
         _walker.EmplaceChildAndSelect(Type::ContainerQuote);
         std::string_view opening = _current_view;
         PushCurrentAndSpaces();
@@ -191,7 +184,7 @@ public:
             if (type() == Type::Operator && _current_view[0] == '\\')
                 Next();
         if (type() != Type::Quote)
-            throw std::runtime_error("quote is not closed");
+            return err("quote is not closed");
 
         _walker.current().item.end(_current.begin());
         _walker.GoUp();
@@ -201,21 +194,14 @@ public:
         _walker.GoUp();
     }
     
-    std::string Parse() {
-        try {
-            _walker.EmplaceChildAndSelect(); // root
-            ParseBody();
-        }
-        catch(const std::runtime_error& e) {
-            return e.what();
-        }
-        catch(int) { }
-        return std::string();
+    std::string Parse() noexcept {
+        _walker.EmplaceChildAndSelect(); // root
+        return ParseBody();
     }
 };
 
 void TestParser() {
-    auto b = Buffer<char>::FromFile("Parser.hpp");
+    auto b = Buffer<char>::FromFile("example.fc");
     Lexer<char> l(b);
     Parser<decltype(l)>::Tree t;
     Parser<decltype(l)> p(l, t);
