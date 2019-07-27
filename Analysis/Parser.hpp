@@ -19,6 +19,7 @@ public:
     using Syntax = N;
     using SyntaxNode = typename Walker::Node;
     using Token = typename R::Token;
+    using TokenType = typename Token::Type;
     using Type = typename Syntax::Type;
     using Traits = R;
     using View = typename Traits::View;
@@ -36,8 +37,8 @@ public:
     Priority _current_priority = Priority{};
     std::string _current_error = std::string{};
     
-    Type type() const {
-        return (Type)(size_t)_current.type();
+    TokenType type() const {
+        return _current.type();
     }
     
     void Next() {
@@ -86,10 +87,10 @@ public:
     void EatSpaces() noexcept {
         _spaces = _walker.tree().CreateNode(Type::ContainerSpace);
         _walker.Select(_spaces);
-        for (Next(); type() != Type::End &&
+        for (Next(); type() != TokenType::End &&
             (
-                type() == Type::Space ||
-                (eat_lines && type() == Type::Line)
+                type() == TokenType::Space ||
+                (eat_lines && type() == TokenType::Line)
             ); Next()) {
             PushCurrent();
         }
@@ -98,10 +99,11 @@ public:
             _spaces = pointer();
         }
         _walker.GoUp();
-        eat_lines = true;// TODO false;
+        eat_lines = true; // TODO false;
     }
     
     void ParseString() noexcept {
+        // TODO add difference between Number literals and String, some features
         PushCurrentAndSpaces();
     }
     
@@ -137,26 +139,26 @@ public:
             BubblePriority();
 
             switch (type()) {
-            case Type::End:
+            case TokenType::End:
                 _walker.GoToRoot();
                 PushSpaces();
                 return std::string();
-            case Type::Operator:
+            case TokenType::Operator:
                 ParseOperator();
                 break;
-            case Type::OpenBrace:
+            case TokenType::OpenBrace:
                 ParseOpening();
                 break;
-            case Type::CloseBrace:
+            case TokenType::CloseBrace:
                 ParseClosure();
                 break;
-            case Type::String:
+            case TokenType::String:
                 ParseString();
                 break;
-            case Type::Quote:
+            case TokenType::Quote:
                 ParseQuote();
                 break;
-            case Type::Line: // TODO
+            case TokenType::Line: // TODO
             default:
                 err(std::string("unexpected token type ") + std::string(ToString(type())));
             }
@@ -179,11 +181,11 @@ public:
         // TODO add string literal features
         _walker.EmplaceChildAndSelect(Type::String); // fill string literal
         _walker.current().item.begin(_current.end());
-        for (Next(); type() != Type::End &&
-            (type() != Type::Quote || _current_view != opening); Next())
-            if (type() == Type::Operator && _current_view[0] == '\\')
+        for (Next(); type() != TokenType::End &&
+            (type() != TokenType::Quote || _current_view != opening); Next())
+            if (type() == TokenType::Operator && _current_view[0] == '\\')
                 Next();
-        if (type() != Type::Quote)
+        if (type() != TokenType::Quote)
             return err("quote is not closed");
 
         _walker.current().item.end(_current.begin());
