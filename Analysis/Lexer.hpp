@@ -42,7 +42,8 @@ public:
         return *_buffer.get(_current);
     }
     
-    View view(const Token& t) {
+    template<class U>
+    View view(const U& t) {
         return View(_buffer.get(t.begin()), t.size());
     }
     
