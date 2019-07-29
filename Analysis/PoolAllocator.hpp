@@ -16,15 +16,18 @@ public:
     
 protected:
     std::vector<T> _pool;
+    size_t _last = 0;
     
 public:
     pointer allocate(size_type n) {
-        _pool.resize(_pool.size() + n);
-        return _pool.size() - 1;
+        _last += n;
+        _pool.reserve(_last);
+        return _last - 1;
     }
     
     void deallocate(pointer p, size_type n) {
         _pool.resize(_pool.size() - n);
+        _last -= n;
     }
     
     void destroy(pointer p) {
@@ -33,7 +36,7 @@ public:
 
     template<class... Args>
     void construct(pointer p, Args&&... args) {
-        _pool[p] = T(std::forward<Args>(args)...);
+        _pool.emplace_back(std::forward<Args>(args)...);
     }
     
     const_pointer address(const_reference r) const {
