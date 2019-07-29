@@ -127,9 +127,13 @@ public:
     }
     
     void ParseClosure() noexcept {
-        // TODO match with opening brace
+        View v = _lexer.view(_walker.get(_walker.current().children[0]).item);
+        if(!_traits.IsClosure(v, _current_view))
+            return err(std::string(v) + " does not match " + std::string(_current_view));
+        
         PushCurrentAndSpaces(); // closure
-        _walker.current().item.priority = 0; // after closure container should have priority of value
+        
+        _walker.current().item.priority = _traits.min_priority; // after closure container should have priority of value
         _walker.GoUp();
     }
     
@@ -167,9 +171,14 @@ public:
     }
     
     void ParseOpening() noexcept {
-        // TODO do not hardcore priority
-        _walker.EmplaceChildAndSelect(Type::ContainerBrace, 18);
-        _walker.EmplaceChildAndSelect(_current, 18); // opening should have max priority in order not to be captured
+        _walker.EmplaceChildAndSelect(
+            Type::ContainerBrace,
+            _traits.max_priority
+        );
+        _walker.EmplaceChildAndSelect(
+            _current,
+            _traits.max_priority
+        ); // opening should have max priority in order not to be captured
         _walker.GoUp();
     }
     
@@ -179,16 +188,17 @@ public:
         PushCurrentAndSpaces();
 
         // TODO add string literal features
-        _walker.EmplaceChildAndSelect(Type::String); // fill string literal
+        _walker.EmplaceChildAndSelect(Type::Quote);
         _walker.current().item.begin(_current.end());
         for (Next(); type() != TokenType::End &&
             (type() != TokenType::Quote || _current_view != opening); Next())
-            if (_traits.IsEscape(_current_view))
+            if (_traits.IsEscape(_current_view)) {
                 Next();
+            }
         if (type() != TokenType::Quote)
             return err("quote is not closed");
 
-        _walker.current().item.end(_current.begin());
+        _walker.current().item.end(_current.begin()); // fill literal
         _walker.GoUp();
 
         PushCurrent(); // closure
