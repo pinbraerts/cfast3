@@ -82,6 +82,8 @@ private:
     };
 
 public:
+    static constexpr Priority max_priority = 18, min_priority = 0;
+
     Priority GetPriority(View src) const {
         if (auto iter = priority_map.find(src); iter != priority_map.end())
             return iter->second;
@@ -90,6 +92,18 @@ public:
 
     static constexpr bool IsEscape(View v) {
         return !v.empty() && v[0] == '\\';
+    }
+    
+    static constexpr bool IsClosure(View v1, View v2) {
+        if(v1.empty() || v2.empty())
+            return false;
+        
+        switch(v1[0]) {
+        case '(': return v2[0] == ')';
+        case '{': return v2[0] == '}';
+        case '[': return v2[0] == ']';
+        default: return false;
+        }
     }
 };
 
