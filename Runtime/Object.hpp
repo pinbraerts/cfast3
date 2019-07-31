@@ -22,39 +22,69 @@ struct Object {
         owner(_owner),
         data(_data) { }
     
+    template<class T>
+    T* _as() {
+        return (T*)data;
+    }
+    
+#define as(T) template _as<T>()
+    
     Type* type() {
-        return (Type*)klass->data;
+        return klass->as(Type);
     }
     
     ~Object();
 };
 
-using Destroy_t = void(*)(void*);
+using Destroy_t = void(*)(Object*);
+using Redeclare_t = void(*)(Object*, Object*, Object*);
 
 struct Type {
-    Destroy_t Destroy;
+    size_t size;
     
-    Type(Destroy_t _Destroy): Destroy(_Destroy) { }
+    Destroy_t Destroy;
+    Redeclare_t Redeclare;
+    
+    Type(
+        size_t _size,
+        Destroy_t _Destroy,
+        Redeclare_t _Redeclare
+    ) : size(_size),
+        Destroy(_Destroy),
+        Redeclare(_Redeclare) { }
 };
 
 Object::~Object() {
     if(data != nullptr) {
         if(owner) {
-            type()->Destroy(data);
+            type()->Destroy(this);
         }
         data = nullptr;
     }
 }
 
 template<class T>
-void DefaultDestroy(void* pobj) {
-    T* obj = (T*)pobj;
+void DefaultDestroy(Object* pobj) {
+    T* obj = pobj->as(T);
     delete obj;
+    pobj->data = nullptr;
+    std::cout << "Deleted object " << pobj->name << " of type " << pobj->klass->name << std::endl;
+}
+
+template<class T>
+void DefaultRedeclare(Object* obj, Object* klass, Object* scope) {
+    if(obj->klass != klass)
+        throw std::runtime_error("Couldn't redeclare " + obj->name + " of type " + obj->klass->name + " with type " + klass->name);
+    std::cout << "Redeclared object " << obj->name << " of type " << obj->klass->name << " in scope " << scope->name << std::endl;
 }
 
 template<class T>
 Type ConstructCType() {
-    return Type(&DefaultDestroy<T>);
+    return Type(
+        sizeof(T),
+        &DefaultDestroy<T>,
+        &DefaultRedeclare<T>
+    );
 }
 
 struct Scope {
@@ -91,10 +121,10 @@ struct Core {
     std::vector<Object*> scopes;
     
     Scope* global() {
-        return (Scope*)_global->data;
+        return _global->as(Scope);
     }
     Scope* local() {
-        return (Scope*)scopes.back()->data;
+        return scopes.back()->as(Scope);
     }
     
     Core(names n)
@@ -120,7 +150,7 @@ struct Core {
                  &_ctypes[index<Args>()]
              )
         ), t == nullptr ? t = global()->children.front().get(): nullptr)...);
-        global()->children.front()->klass = t;
+        t->klass = t;
         p->klass = ctype<Scope>();
         return p;
     }
@@ -133,13 +163,20 @@ struct Core {
     Object* Resolve(std::string_view name) {
         Object* res = nullptr;
         for(auto i = scopes.rbegin(); i < scopes.rend() && res == nullptr; ++i)
-            res = ((Scope*)(*i)->data)->Find(name);
+            res = (*i)->as(Scope)->Find(name);
         return res;
     }
     
-    Object* Declare(Object* type, std::string_view name, bool owner = false, void* data = nullptr) {
-        local()->children.push_back(std::make_unique<Object>(type, name, owner, data));
-        return local()->children.back().get();
+    Object* Declare(Object* klass, std::string_view name, bool owner = false, void* data = nullptr) {
+        Object* o = local()->Find(name);
+        if(o != nullptr) {
+            o->type()->Redeclare(o, klass, scopes.back());
+            return o;
+        }
+        else {
+            local()->children.push_back(std::make_unique<Object>(klass, name, owner, data));
+            return local()->children.back().get();
+        }
     }
     
     template<class T>
@@ -164,11 +201,13 @@ void TestObject() {
         return;
     }
     Object* i = c.Declare(c_int, "i", true, new int(5));
+    c.Declare(c_int, "i", true);
     
     int p = -5;
     std::cout << "before: " << p << std::endl;
     Object* _p = c.Observe(p);
-    *(int*)_p->data = *(int*)i->data;
+    std::cout << "Type of observed object: " << _p->klass->name << std::endl;
+    *_p->as(int) = *i->as(int);
     std::cout << "after: " << p << std::endl;
     
     std::cout << i->klass->klass->klass->name << std::endl;
