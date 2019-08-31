@@ -1,0 +1,1090 @@
+<?xml version="1.0" standalone="yes"?>
+<NewDataSet>
+  <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="SuppressVersion">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="CurrentVersion" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="Analysis">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="FileName" type="xs:string" default="" />
+                <xs:element name="ErrorCode" type="xs:string" default="" />
+                <xs:element name="Message" type="xs:string" default="" />
+                <xs:element name="CodePrev" type="xs:unsignedInt" default="0" />
+                <xs:element name="CodeCurrent" type="xs:unsignedInt" default="0" />
+                <xs:element name="CodeNext" type="xs:unsignedInt" default="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+      <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+        <xs:selector xpath=".//Analysis" />
+        <xs:field xpath="FileName" />
+        <xs:field xpath="ErrorCode" />
+        <xs:field xpath="Message" />
+        <xs:field xpath="CodePrev" />
+        <xs:field xpath="CodeCurrent" />
+        <xs:field xpath="CodeNext" />
+      </xs:unique>
+    </xs:element>
+  </xs:schema>
+  <SuppressVersion>
+    <CurrentVersion>2</CurrentVersion>
+  </SuppressVersion>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'errno_t' type. The system header file should be used: #include &lt;STDDEF.H&gt; or &lt;CRTDEFS.H&gt;.</Message>
+    <CodePrev>1769445</CodePrev>
+    <CodeCurrent>12093559</CodeCurrent>
+    <CodeNext>1912560142</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'wint_t' type. The system header file should be used: #include &lt;WCHAR.H&gt; or &lt;CRTDEFS.H&gt;.</Message>
+    <CodePrev>12093559</CodePrev>
+    <CodeCurrent>1912560142</CodeCurrent>
+    <CodeNext>3355273506</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'wctype_t' type. The system header file should be used: #include &lt;WCHAR.H&gt; or &lt;CRTDEFS.H&gt;.</Message>
+    <CodePrev>1912560142</CodePrev>
+    <CodeCurrent>3355273506</CodeCurrent>
+    <CodeNext>193506927</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '__time__t' type. The system header file should be used: #include &lt;CRTDEFS.H&gt; or &lt;SYS\STAT.H&gt; or &lt;SYS\TIMEB.H&gt;.</Message>
+    <CodePrev>3355273506</CodePrev>
+    <CodeCurrent>193506927</CodeCurrent>
+    <CodeNext>1544803855</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '__time__t' type. The system header file should be used: #include &lt;TIME.H&gt; or &lt;SYS\STAT.H&gt; or &lt;SYS\TIMEB.H&gt;.</Message>
+    <CodePrev>193506927</CodePrev>
+    <CodeCurrent>1544803855</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>3622415350</CodeCurrent>
+    <CodeNext>3167409464</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>2636903698</CodeCurrent>
+    <CodeNext>3929405313</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>2636903698</CodePrev>
+    <CodeCurrent>3929405313</CodeCurrent>
+    <CodeNext>319991677</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_locale_t' type. The system header file should be used: #include &lt;CRTDEF.H&gt;.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>1253921314</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'mbstate_t' type. The system header file should be used: #include &lt;WCHAR.H&gt;.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>3087633767</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'time_t' type. The system header file should be used: #include &lt;TIME.H&gt; or &lt;SYS\STAT.H&gt; or &lt;SYS\TIMEB.H&gt;.</Message>
+    <CodePrev>43</CodePrev>
+    <CodeCurrent>772643191</CodeCurrent>
+    <CodeNext>100</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>3355273506</CodePrev>
+    <CodeCurrent>193506927</CodeCurrent>
+    <CodeNext>1544803855</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>262553599</CodePrev>
+    <CodeCurrent>23059083</CodeCurrent>
+    <CodeNext>2949973961</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_HFILE' type. The system header file should be used: #include &lt;CRTDBG.H&gt;.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>3018561639</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_CRT_REPORT_HOOK' type. The system header file should be used: #include &lt;CRTDBG.H&gt;.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>1076575029</CodeCurrent>
+    <CodeNext>255419877</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_CRT_REPORT_HOOKW' type. The system header file should be used: #include &lt;CRTDBG.H&gt;.</Message>
+    <CodePrev>1076575029</CodePrev>
+    <CodeCurrent>255419877</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_CRT_ALLOC_HOOK' type. The system header file should be used: #include &lt;CRTDBG.H&gt;.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>4180396177</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_CRT_DUMP_CLIENT' type. The system header file should be used: #include &lt;CRTDBG.H&gt;.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>1953468660</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>5077432</CodeCurrent>
+    <CodeNext>1242296132</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>5077432</CodePrev>
+    <CodeCurrent>1242296132</CodeCurrent>
+    <CodeNext>2772922181</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>1242296132</CodePrev>
+    <CodeCurrent>2772922181</CodeCurrent>
+    <CodeNext>173267027</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>2772922181</CodePrev>
+    <CodeCurrent>173267027</CodeCurrent>
+    <CodeNext>10837459</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>173267027</CodePrev>
+    <CodeCurrent>10837459</CodeCurrent>
+    <CodeNext>590793</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_CrtMemState' type. The system header file should be used: #include &lt;CRTDBG.H&gt;.</Message>
+    <CodePrev>10837459</CodePrev>
+    <CodeCurrent>590793</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>4180396177</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>115995542</CodePrev>
+    <CodeCurrent>3382384314</CodeCurrent>
+    <CodeNext>1822336410</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>1306334989</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>1335454173</CodePrev>
+    <CodeCurrent>2093339413</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>1861171631</CodeCurrent>
+    <CodeNext>7292663</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>1861171631</CodePrev>
+    <CodeCurrent>7292663</CodeCurrent>
+    <CodeNext>105</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_wstdio.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>11370699</CodeCurrent>
+    <CodeNext>2057</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_wstdio.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'FILE' type. The system header file should be used: #include &lt;STDIO.H&gt;.</Message>
+    <CodePrev>11370699</CodePrev>
+    <CodeCurrent>2057</CodeCurrent>
+    <CodeNext>100</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdio.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'fpos_t' type. The system header file should be used: #include &lt;STDIO.H&gt;.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>96548679</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdio.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>54847674</CodePrev>
+    <CodeCurrent>3646248</CodeCurrent>
+    <CodeNext>909672</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdio.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>889603</CodePrev>
+    <CodeCurrent>1675029096</CodeCurrent>
+    <CodeNext>27423819</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>errno.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>343617982</CodeCurrent>
+    <CodeNext>50647043</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>errno.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>938309862</CodeCurrent>
+    <CodeNext>3667142393</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>errno.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>938309862</CodePrev>
+    <CodeCurrent>3667142393</CodeCurrent>
+    <CodeNext>3913244158</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_wstring.h</FileName>
+    <ErrorCode>V575</ErrorCode>
+    <Message>The null pointer is passed into 'wcstok' function. Inspect the third argument.</Message>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>3501270417</CodeCurrent>
+    <CodeNext>125</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_wio.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_fsize_t' type. The system header file should be used: #include &lt;IO.H&gt; or &lt;WCHAR.H&gt;.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>3825170117</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_wio.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>3825170117</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>types.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_ino_t' type. The system header file should be used: #include &lt;WCHAR.H&gt;.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>3849155611</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>types.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'ino_t' type. The system header file should be used: #include &lt;WCHAR.H&gt;.</Message>
+    <CodePrev>3749503192</CodePrev>
+    <CodeCurrent>24155287</CodeCurrent>
+    <CodeNext>100</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>types.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_dev_t' type. The system header file should be used: #include &lt;SYS\TYPES.H&gt;.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>4262573502</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>types.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'dev_t' type. The system header file should be used: #include &lt;SYS\TYPES.H&gt;.</Message>
+    <CodePrev>3749503192</CodePrev>
+    <CodeCurrent>24161871</CodeCurrent>
+    <CodeNext>100</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>types.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_off_t' type. The system header file should be used: #include &lt;WCHAR.H&gt; or &lt;SYS\TYPES.H&gt;.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>446100582</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>types.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>446100582</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>types.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'off_t' type. The system header file should be used: #include &lt;WCHAR.H&gt; or &lt;SYS\TYPES.H&gt;.</Message>
+    <CodePrev>3749503192</CodePrev>
+    <CodeCurrent>24155551</CodeCurrent>
+    <CodeNext>100</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stat.h</FileName>
+    <ErrorCode>V802</ErrorCode>
+    <Message>On _-bit platform, structure size can be reduced from _ to _ bytes by rearranging the fields according to their sizes in decreasing order.</Message>
+    <CodePrev>3127964</CodePrev>
+    <CodeCurrent>123</CodeCurrent>
+    <CodeNext>514259</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stat.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>1005569</CodePrev>
+    <CodeCurrent>1317805</CodeCurrent>
+    <CodeNext>1317421</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stat.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>1317805</CodePrev>
+    <CodeCurrent>1317421</CodeCurrent>
+    <CodeNext>1317869</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stat.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>1317421</CodePrev>
+    <CodeCurrent>1317869</CodeCurrent>
+    <CodeNext>193</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>wchar.h</FileName>
+    <ErrorCode>V659</ErrorCode>
+    <Message>Declarations of functions with 'wmemchr' name differ in the 'const' keyword only, but the bodies of these functions have different composition. This is suspicious and can possibly be an error. Check lines: _, _.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>781193031</CodeCurrent>
+    <CodeNext>1862113798</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stddef.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>3082697950</CodeCurrent>
+    <CodeNext>63756587</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>744425301</CodePrev>
+    <CodeCurrent>3434229093</CodeCurrent>
+    <CodeNext>3823055415</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>3733304451</CodeCurrent>
+    <CodeNext>1202001649</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>3733304451</CodePrev>
+    <CodeCurrent>1202001649</CodeCurrent>
+    <CodeNext>1257616065</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>1202001649</CodePrev>
+    <CodeCurrent>1257616065</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>1388904049</CodeCurrent>
+    <CodeNext>3743727199</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>1388904049</CodePrev>
+    <CodeCurrent>3743727199</CodeCurrent>
+    <CodeNext>671878854</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>3743727199</CodePrev>
+    <CodeCurrent>671878854</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>4049310971</CodePrev>
+    <CodeCurrent>1261479086</CodeCurrent>
+    <CodeNext>2833984319</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>3757264830</CodePrev>
+    <CodeCurrent>229998968</CodeCurrent>
+    <CodeNext>1952662090</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>9795594</CodePrev>
+    <CodeCurrent>2209258227</CodeCurrent>
+    <CodeNext>2785846447</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>1226102679</CodePrev>
+    <CodeCurrent>1733772211</CodeCurrent>
+    <CodeNext>3943421541</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>2027733964</CodePrev>
+    <CodeCurrent>3154143316</CodeCurrent>
+    <CodeNext>2014233546</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>3154143316</CodePrev>
+    <CodeCurrent>2014233546</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>4019971110</CodePrev>
+    <CodeCurrent>3156075556</CodeCurrent>
+    <CodeNext>2014531514</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>3156075556</CodePrev>
+    <CodeCurrent>2014531514</CodeCurrent>
+    <CodeNext>4187421295</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>2356872628</CodePrev>
+    <CodeCurrent>2213412758</CodeCurrent>
+    <CodeNext>37260366</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_math.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>2213412758</CodePrev>
+    <CodeCurrent>37260366</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_onexit_t' type. The system header file should be used: #include &lt;STDLIB.H&gt;.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>852913547</CodeCurrent>
+    <CodeNext>13067</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_purecall_handler' type. The system header file should be used: #include &lt;STDLIB.H&gt;.</Message>
+    <CodePrev>1360265976</CodePrev>
+    <CodeCurrent>474004441</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'div_t' type. The system header file should be used: #include &lt;STDLIB.H&gt;.</Message>
+    <CodePrev>4645</CodePrev>
+    <CodeCurrent>5967</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'ldiv_t' type. The system header file should be used: #include &lt;STDLIB.H&gt;.</Message>
+    <CodePrev>9365</CodePrev>
+    <CodeCurrent>11663</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_LDOUBLE' type. The system header file should be used: #include &lt;STDLIB.H&gt;.</Message>
+    <CodePrev>23062521</CodePrev>
+    <CodeCurrent>40225</CodeCurrent>
+    <CodeNext>510805</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_LONGDOUBLE' type. The system header file should be used: #include &lt;STDLIB.H&gt;.</Message>
+    <CodePrev>148607</CodePrev>
+    <CodeCurrent>325025</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_LDBL_' type. The system header file should be used: #include &lt;STDLIB.H&gt;.</Message>
+    <CodePrev>92242033</CodePrev>
+    <CodeCurrent>20443</CodeCurrent>
+    <CodeNext>510805</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>18743</CodeCurrent>
+    <CodeNext>9365</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>18743</CodePrev>
+    <CodeCurrent>9365</CodeCurrent>
+    <CodeNext>11663</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>889603</CodePrev>
+    <CodeCurrent>2951600184</CodeCurrent>
+    <CodeNext>463985346</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>2951600184</CodePrev>
+    <CodeCurrent>463985346</CodeCurrent>
+    <CodeNext>455052</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>889603</CodePrev>
+    <CodeCurrent>2951600132</CodeCurrent>
+    <CodeNext>463985346</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>2951600132</CodePrev>
+    <CodeCurrent>463985346</CodeCurrent>
+    <CodeNext>455052</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>3369266993</CodeCurrent>
+    <CodeNext>123</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>3140027125</CodeCurrent>
+    <CodeNext>123</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>53806030</CodePrev>
+    <CodeCurrent>1757442105</CodeCurrent>
+    <CodeNext>3324872189</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>889603</CodePrev>
+    <CodeCurrent>3350057100</CodeCurrent>
+    <CodeNext>936828658</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>889603</CodePrev>
+    <CodeCurrent>1030674714</CodeCurrent>
+    <CodeNext>936828658</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>889603</CodePrev>
+    <CodeCurrent>802922579</CodeCurrent>
+    <CodeNext>936828658</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>889603</CodePrev>
+    <CodeCurrent>2128461349</CodeCurrent>
+    <CodeNext>936828658</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>343617982</CodeCurrent>
+    <CodeNext>50647043</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>938309862</CodeCurrent>
+    <CodeNext>3667142393</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>938309862</CodePrev>
+    <CodeCurrent>3667142393</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>580575360</CodePrev>
+    <CodeCurrent>3941098501</CodeCurrent>
+    <CodeNext>1635442388</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>3884582052</CodePrev>
+    <CodeCurrent>3978878246</CodeCurrent>
+    <CodeNext>2198077646</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>2044667874</CodePrev>
+    <CodeCurrent>1506677612</CodeCurrent>
+    <CodeNext>3921763571</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>2476152990</CodePrev>
+    <CodeCurrent>835218212</CodeCurrent>
+    <CodeNext>320288612</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>1675404790</CodePrev>
+    <CodeCurrent>1823426</CodeCurrent>
+    <CodeNext>1635839853</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>stdlib.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>3350808854</CodePrev>
+    <CodeCurrent>463985346</CodeCurrent>
+    <CodeNext>1635839853</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>float.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>2170740726</CodePrev>
+    <CodeCurrent>2178307458</CodeCurrent>
+    <CodeNext>4026635515</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>float.h</FileName>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP_/LP_ data models.</Message>
+    <CodePrev>13296</CodePrev>
+    <CodeCurrent>952534889</CodeCurrent>
+    <CodeNext>100</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>malloc.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>133473</CodeCurrent>
+    <CodeNext>168193</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>malloc.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>133473</CodePrev>
+    <CodeCurrent>168193</CodeCurrent>
+    <CodeNext>158097</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>malloc.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard '_HEAPINFO' type. The system header file should be used: #include &lt;MALLOC.H&gt;.</Message>
+    <CodePrev>158097</CodePrev>
+    <CodeCurrent>81309</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>malloc.h</FileName>
+    <ErrorCode>V206</ErrorCode>
+    <Message>Explicit conversion from 'void *' to 'unsigned int *'.</Message>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>3757019860</CodeCurrent>
+    <CodeNext>2139517366</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>malloc.h</FileName>
+    <ErrorCode>V206</ErrorCode>
+    <Message>Explicit conversion from 'void *' to 'unsigned int *'.</Message>
+    <CodePrev>2072047931</CodePrev>
+    <CodeCurrent>3766467027</CodeCurrent>
+    <CodeNext>3917898939</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_terminate.h</FileName>
+    <ErrorCode>V677</ErrorCode>
+    <Message>Custom declaration of a standard 'terminate_function' type. The system header file should be used: #include &lt;EH.H&gt;.</Message>
+    <CodePrev>804665076</CodePrev>
+    <CodeCurrent>1609318955</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>17202195</CodeCurrent>
+    <CodeNext>17075271</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>17202195</CodePrev>
+    <CodeCurrent>17075271</CodeCurrent>
+    <CodeNext>539237</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>17075271</CodePrev>
+    <CodeCurrent>539237</CodeCurrent>
+    <CodeNext>68948735</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>539237</CodePrev>
+    <CodeCurrent>68948735</CodeCurrent>
+    <CodeNext>69056511</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>68948735</CodePrev>
+    <CodeCurrent>69056511</CodeCurrent>
+    <CodeNext>276118547</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>69056511</CodePrev>
+    <CodeCurrent>276118547</CodeCurrent>
+    <CodeNext>276286535</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>276118547</CodePrev>
+    <CodeCurrent>276286535</CodeCurrent>
+    <CodeNext>8626277</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>276286535</CodePrev>
+    <CodeCurrent>8626277</CodeCurrent>
+    <CodeNext>17097123</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>8626277</CodePrev>
+    <CodeCurrent>17097123</CodeCurrent>
+    <CodeNext>17236387</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>17097123</CodePrev>
+    <CodeCurrent>17236387</CodeCurrent>
+    <CodeNext>36574869</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>2237875</CodePrev>
+    <CodeCurrent>1419230227</CodeCurrent>
+    <CodeNext>1419070535</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>1419230227</CodePrev>
+    <CodeCurrent>1419070535</CodeCurrent>
+    <CodeNext>1381700350</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>1419070535</CodePrev>
+    <CodeCurrent>1381700350</CodeCurrent>
+    <CodeNext>1381677054</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>1381700350</CodePrev>
+    <CodeCurrent>1381677054</CodeCurrent>
+    <CodeNext>1231633430</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>1381677054</CodePrev>
+    <CodeCurrent>1231633430</CodeCurrent>
+    <CodeNext>1231801410</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>1231633430</CodePrev>
+    <CodeCurrent>1231801410</CodeCurrent>
+    <CodeNext>1419059619</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>1231801410</CodePrev>
+    <CodeCurrent>1419059619</CodeCurrent>
+    <CodeNext>1419166115</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>locale.h</FileName>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <CodePrev>1419059619</CodePrev>
+    <CodeCurrent>1419166115</CodeCurrent>
+    <CodeNext>193</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_wstdio.h</FileName>
+    <ErrorCode>V524</ErrorCode>
+    <Message>It is odd that the body of 'vswprintf' function is fully equivalent to the body of '_vswprintf_c' function.</Message>
+    <CodePrev>14234175</CodePrev>
+    <CodeCurrent>3465696133</CodeCurrent>
+    <CodeNext>865446492</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_wstdio.h</FileName>
+    <ErrorCode>V524</ErrorCode>
+    <Message>It is odd that the body of '_swprintf_c_l' function is fully equivalent to the body of '_swprintf_l' function.</Message>
+    <CodePrev>14234175</CodePrev>
+    <CodeCurrent>3911196088</CodeCurrent>
+    <CodeNext>865446492</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>corecrt_wstdio.h</FileName>
+    <ErrorCode>V524</ErrorCode>
+    <Message>It is odd that the body of '_swprintf_c' function is fully equivalent to the body of 'swprintf' function.</Message>
+    <CodePrev>14234175</CodePrev>
+    <CodeCurrent>977798949</CodeCurrent>
+    <CodeNext>865446492</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V1003</ErrorCode>
+    <Message>The macro '_BLOCK_TYPE' is a dangerous expression. The parameter 'block' must be surrounded by parentheses.</Message>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>2659419873</CodeCurrent>
+    <CodeNext>3359137186</CodeNext>
+  </Analysis>
+  <Analysis>
+    <FileName>crtdbg.h</FileName>
+    <ErrorCode>V1003</ErrorCode>
+    <Message>The macro '_BLOCK_SUBTYPE' is a dangerous expression. The parameter 'block' must be surrounded by parentheses.</Message>
+    <CodePrev>2659419873</CodePrev>
+    <CodeCurrent>3359137186</CodeCurrent>
+    <CodeNext>0</CodeNext>
+  </Analysis>
+</NewDataSet>

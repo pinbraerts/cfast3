@@ -24,36 +24,34 @@ struct TextPosition {
         position(_position) { }
 };
 
-template<class C = char,
-    class P = std::unique_ptr<C[]>,
-    class D = C*,
-    class I = size_t,
-    class T = TextPosition<C>>
+template<class C = char, class T = TextPosition<C>>
 struct Buffer {
 public:
-    using char_type = C;
-    using pointer = P;
-    using Raw = D;
-    using Index = I;
-    using Position = T;
+    using char_type   = C;
+    using description = T;
+    using pointer     = char_type *;
 
 private:
-    pointer _data;
+    std::unique_ptr<C[]> _data;
     size_t _size;
-    std::vector<Index> _lines;
-    
+    std::vector<size_t> _lines;
+
     Buffer(
         pointer&& data,
         size_t sz
     ) : _data(std::move(data)),
         _size(sz) { }
-    
+
+    void newline(size_t i) {
+        _lines.push_back(i);
+    }
+
 public:
     Buffer(const Buffer&) = delete;
     Buffer(Buffer&&) = default;
     Buffer(std::basic_istream<char_type>& input) {
         size_t pos = 0;
-        while(input) {
+        while (input) {
             input.ignore(std::numeric_limits<std::streamsize>::max(), char_type('\n'));
             pos += input.gcount();
             newline(pos);
@@ -65,57 +63,67 @@ public:
         _data[pos] = '\0';
         _size = pos;
     }
+    Buffer(const std::basic_string<char_type>& str) {
+        for (size_t pos = 0; pos < str.size(); ++pos) {
+            if (str[pos] != '\n')
+                continue;
+            newline(pos);
+        }
+        _data = std::unique_ptr<char_type[]>(new char_type[str.size() + 1]);
+        str.copy(_data.get(), str.size() + 1);
+        _size = str.size();
+    }
 
     static Buffer FromFile(std::basic_string<char_type> path) {
         std::basic_ifstream<char_type> input(path);
         return Buffer(input);
     }
-    
-    static Buffer FromString(std::basic_string<char_type> str) {
-        std::basic_istringstream<char_type> input;
-        input.str(str);
-        return Buffer(input);
-    }
 
-    void newline(Index i) {
-        _lines.push_back(i);
-    }
-    
     size_t size() const {
         return _size;
     }
-    
-    const std::vector<Index>& lines() const {
+
+    const std::vector<size_t>& lines() const {
         return _lines;
     }
 
-    Raw get(Index i) {
+    pointer get(size_t i) {
         return data() + i;
     }
-    
-    Raw data() {
+
+    pointer data() {
         return _data.get();
     }
-    
-    Position GetPosition(Index i) {
+
+    description GetDescription(size_t i) {
         auto it = std::lower_bound(
             _lines.begin(), _lines.end(), i
         );
-        if(it >= _lines.end())
-            return Position(get(i), 1, i + 1);
-        return Position(
+        if (it <= _lines.begin())
+            return description(get(i), 1, i + 1);
+        --it;
+        return description(
             get(i),
-            it - _lines.begin() + 1,
-            i - *it + 1
+            it - _lines.begin() + 2,
+            i + 1 - *it
         );
     }
-};
 
-void TestBuffer() {
-    auto b = Buffer<char>::FromFile("Buffer.hpp");
-    std::cout << b.data() << std::endl;
-    for(size_t i: b.lines())
-        std::cout << i << ' ';
-}
+#if __cplusplus == 201703L
+
+    template<class T>
+    std::basic_string_view<char_type> span(T&& x) {
+        return std::basic_string_view<char_type>(get(x.begin()), get(x.end()));
+    }
+
+#else // ^^^ C++17 | previous versions vvv
+
+    template<class T>
+    std::basic_string<char_type> span(T&& x) {
+        return std::basic_string<char_type>(get(x.begin()), get(x.end()));
+    }
+
+#endif // C++17
+};
 
 #endif // !CFAST_BUFFER_HPP
