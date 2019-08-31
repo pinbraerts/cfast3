@@ -261,5 +261,7 @@ paket-files/
 __pycache__/
 *.pyc
 
-# Binary output
-*.out
+CMakeFiles/
+Makefile
+cmake_install.cmake
+CMakeCache.txt

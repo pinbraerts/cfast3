@@ -9,7 +9,7 @@ void TestLexer() {
     auto b = Buffer<char>::FromFile("Lexer.hpp");
     Lexer<char> l(b);
     using L = Lexer<char>;
-    L::Token t = l.Next();
+    L::token_type t = l.Next();
     for(; t.type != L::Traits::Type::End; t = l.Next()) {
         std::cout << ToString(t.type) << ' ' << '\'' << l.buffer().span(t) << '\'' << std::endl;
     }

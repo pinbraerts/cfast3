@@ -46,11 +46,11 @@ constexpr const char* ToString(SyntaxType t) {
 template<class T>
 class SyntaxTraits {
 public:
-    using char_type = typename T::char_type;
-    using Type      = SyntaxType;
-    using TokenType = typename T::Type;
-    using Token     = typename T::Token;
-    using Priority  = float;
+    using char_type  = typename T::char_type;
+    using Type       = SyntaxType;
+    using TokenType  = typename T::Type;
+    using token_type = typename T::token_type;
+    using Priority   = float;
     
 private:
     // https://en.cppreference.com/w/cpp/language/operator_precedence

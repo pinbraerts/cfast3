@@ -14,22 +14,22 @@ struct Lexer {
 public:
     // Typedefs
     using char_type   = C;
-    using Buffer      = Buffer<char_type>;
-    using description = typename Buffer::description;
-    using pointer     = typename Buffer::pointer;
-    using Token       = T;
+    using buffer_type = Buffer<char_type>;
+    using description = typename buffer_type::description;
+    using pointer     = typename buffer_type::pointer;
+    using token_type  = T;
     using Traits      = L;
     using Type        = typename Traits::Type;
     
 private:
-    Buffer& _buffer;
+    buffer_type& _buffer;
     size_t _current;
     Traits _traits;
     
 public:
     // Constructor
     Lexer(
-        Buffer& buffer,
+        buffer_type& buffer,
         size_t current = 0,
         Traits traits = Traits { }
     ) : _buffer(buffer),
@@ -40,21 +40,21 @@ public:
     char_type& chr() {
         return *_buffer.get(_current);
     }
-    Buffer& buffer() {
+    buffer_type& buffer() {
         return _buffer;
     }
     
-    MatchResult Match(const Token& t) {
+    MatchResult Match(const token_type& t) {
         return _traits.Match(t.type, _buffer.span(t));
     }
     
-    Token Next() noexcept {
+    token_type Next() noexcept {
         if (_current >= _buffer.size())
-            return Token();
+            return token_type();
 
-        Token x(_traits.GetType(chr()), _current, _current);
+        token_type x(_traits.GetType(chr()), _current, _current);
         x.end(++_current);
-        Token temp = x;
+        token_type temp = x;
 
         while (_current < _buffer.size() && x.type == _traits.GetType(chr())) {
             temp.end(++_current);

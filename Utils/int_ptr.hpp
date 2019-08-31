@@ -24,27 +24,27 @@ public:
 
     // Boolean operators
     template<class U>
-    std::enable_if_t<std::is_convertible_v<T*, U*>, bool> operator==(int_ptr<U> ptr) const {
+    std::enable_if_t<std::is_convertible<T*, U*>::value, bool> operator==(int_ptr<U> ptr) const {
         return _offset == ptr._offset;
     }
     template<class U>
-    std::enable_if_t<std::is_convertible_v<T*, U*>, bool> operator!=(int_ptr<U> ptr) const {
+    std::enable_if_t<std::is_convertible<T*, U*>::value, bool> operator!=(int_ptr<U> ptr) const {
         return _offset != ptr._offset;
     }
     template<class U>
-    std::enable_if_t<std::is_convertible_v<T*, U*>, bool> operator<=(int_ptr<U> ptr) const {
+    std::enable_if_t<std::is_convertible<T*, U*>::value, bool> operator<=(int_ptr<U> ptr) const {
         return _offset <= ptr._offset;
     }
     template<class U>
-    std::enable_if_t<std::is_convertible_v<T*, U*>, bool> operator>=(int_ptr<U> ptr) const {
+    std::enable_if_t<std::is_convertible<T*, U*>::value, bool> operator>=(int_ptr<U> ptr) const {
         return _offset >= ptr._offset;
     }
     template<class U>
-    std::enable_if_t<std::is_convertible_v<T*, U*>, bool> operator<(int_ptr<U> ptr) const {
+    std::enable_if_t<std::is_convertible<T*, U*>::value, bool> operator<(int_ptr<U> ptr) const {
         return _offset < ptr._offset;
     }
     template<class U>
-    std::enable_if_t<std::is_convertible_v<T*, U*>, bool> operator>(int_ptr<U> ptr) const {
+    std::enable_if_t<std::is_convertible<T*, U*>::value, bool> operator>(int_ptr<U> ptr) const {
         return _offset > ptr._offset;
     }
 
@@ -56,13 +56,13 @@ public:
         return int_ptr(_offset + offset);
     }
     template<class U>
-    std::enable_if_t<std::is_convertible_v<T*, U*>, difference_type> operator-(int_ptr<U> ptr) const {
+    std::enable_if_t<std::is_convertible<T*, U*>::value, difference_type> operator-(int_ptr<U> ptr) const {
         return _offset - ptr._offset;
     }
 
     // Assignment operators
     template<class U>
-    std::enable_if_t<std::is_convertible_v<T*, U*>, int_ptr&> operator=(int_ptr<U> ptr) {
+    std::enable_if_t<std::is_convertible<T*, U*>::value, int_ptr&> operator=(int_ptr<U> ptr) {
         _offset = ptr._offset;
         return *this;
     }

@@ -74,14 +74,14 @@ public:
     // Assignment operators
     Buffer& operator=(const base& str) {
         if (static_cast<base*>(this) == &str)
-            return;
+            return *this;
         operator=(str);
         scan();
         return *this;
     }
     Buffer& operator=(base&& str) {
         if (static_cast<base*>(this) == &str)
-            return;
+            return *this;
         operator=(std::move(str));
         scan();
         return *this;
@@ -111,8 +111,8 @@ public:
         return &operator[](i);
     }
     
-    template<class T>
-    string_view<char_type> span(T&& x) {
+    template<class U>
+    string_view<char_type> span(U&& x) {
         return string_view<char_type>(get(x.begin()), get(x.end()));
     }
 
