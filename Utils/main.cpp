@@ -25,7 +25,7 @@ void TestBuffer() {
     };
 
     auto str = b.span(X{ 1027, 1033 });
-    auto desc = b.GetDescription(1027);
+    auto desc = b.get_description(1027);
     std::cout << str << " at " << desc.line << " line at " << desc.position << " position" << std::endl;
 }
 
