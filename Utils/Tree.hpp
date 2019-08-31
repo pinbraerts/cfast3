@@ -1,10 +1,7 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <string>
-#include <iomanip>
-
+#include "defines.hpp"
 #include "VectorNode.hpp"
+
+namespace cfast {
 
 template<class T>
 class Tree {
@@ -40,19 +37,4 @@ public:
     }
 };
 
-template<class T, class A, class I>
-std::vector<T, A> MoveItems(std::vector<T, A>& vec, I first, I last) {
-    if(first == vec.begin() && last == vec.end()) {
-       return std::move(vec);
-    }
-    
-    std::vector<T, A> res;
-   
-    std::copy(
-        std::make_move_iterator(first),
-        std::make_move_iterator(last),
-        std::back_inserter(res)
-     );
-     vec.erase(first, last);
-     return res;
-}
+} // namespace cfast

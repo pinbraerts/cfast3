@@ -1,12 +1,9 @@
 #ifndef CFAST_BUFFER_HPP
 #define CFAST_BUFFER_HPP
 
-#include <iostream>
-#include <algorithm>
-#include <vector>
-#include <fstream>
-#include <memory>
-#include <sstream>
+#include "defines.hpp"
+
+namespace cfast {
 
 template<class C = char>
 struct TextPosition {
@@ -109,21 +106,12 @@ public:
         );
     }
 
-#if __cplusplus == 201703L
-
     template<class T>
-    std::basic_string_view<char_type> span(T&& x) {
-        return std::basic_string_view<char_type>(get(x.begin()), get(x.end()));
+    string_view<char_type> span(T&& x) {
+        return string_view<char_type>(get(x.begin()), get(x.end()));
     }
-
-#else // ^^^ C++17 | previous versions vvv
-
-    template<class T>
-    std::basic_string<char_type> span(T&& x) {
-        return std::basic_string<char_type>(get(x.begin()), get(x.end()));
-    }
-
-#endif // C++17
 };
+
+} // namespace cfast
 
 #endif // !CFAST_BUFFER_HPP

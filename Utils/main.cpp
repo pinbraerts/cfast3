@@ -1,5 +1,10 @@
+#include <iostream>
+#include <iomanip>
+
 #include "Buffer.hpp"
 #include "ScopedNode.hpp"
+
+using namespace cfast;
 
 void TestBuffer() {
     auto b = Buffer<char>::FromFile("Buffer.hpp");

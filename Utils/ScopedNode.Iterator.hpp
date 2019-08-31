@@ -3,6 +3,8 @@
 
 #include "ScopedNode.hpp"
 
+namespace cfast {
+
 template<class T>
 class ScopedNode<T>::iterator {
 private:
@@ -83,5 +85,7 @@ template<class T>
 typename ScopedNode<T>::iterator ScopedNode<T>::end() {
     return iterator();
 }
+
+} // namespace cfast
 
 #endif // !CFAST_SCOPED_NODE_ITERATOR_HPP

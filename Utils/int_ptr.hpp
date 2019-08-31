@@ -1,6 +1,8 @@
 #ifndef INT_PTR_HPP
 #define INT_PTR_HPP
 
+namespace cfast {
+
 template<class T, class S = size_t>
 class int_ptr {
 public:
@@ -86,5 +88,7 @@ public:
         return _offset;
     }
 };
+
+} // namespace cfast
 
 #endif // !INT_PTR_HPP

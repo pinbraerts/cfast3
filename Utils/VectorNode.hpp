@@ -5,6 +5,8 @@
 
 #include "int_ptr.hpp"
 
+namespace cfast {
+
 template<class T, template<class...> class ptr = int_ptr>
 struct VectorNode {
     using item_type = T;
@@ -23,5 +25,7 @@ struct VectorNode {
     template<class... Args>
     VectorNode(Args&& ... args) : item(std::forward<Args>(args)...) { }
 };
+
+} // namespace cfast
 
 #endif // !CFAST_VECTOR_NODE_HPP

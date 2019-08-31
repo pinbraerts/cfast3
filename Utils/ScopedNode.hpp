@@ -3,6 +3,8 @@
 
 #include "Tree.hpp"
 
+namespace cfast {
+
 template<class T>
 class ScopedNode {
 public:
@@ -151,6 +153,8 @@ std::basic_ostream<C>& operator<<(std::basic_ostream<C>& stream, const ScopedNod
 template<class T> ScopedNode(T&)->ScopedNode<T>;
 
 #endif // C++17
+
+} // namespace cfast;
 
 #include "ScopedNode.Iterator.hpp"
 
