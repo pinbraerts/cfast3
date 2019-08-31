@@ -45,7 +45,7 @@ public:
     }
     
     MatchResult Match(const Token& t) {
-        return _traits.Match(t.type(), _buffer.span(t));
+        return _traits.Match(t.type, _buffer.span(t));
     }
     
     Token Next() noexcept {
@@ -56,7 +56,7 @@ public:
         x.end(++_current);
         Token temp = x;
 
-        while (_current < _buffer.size() && x.type() == _traits.GetType(chr())) {
+        while (_current < _buffer.size() && x.type == _traits.GetType(chr())) {
             temp.end(++_current);
             switch (Match(temp)) {
             case MatchResult::Combination:

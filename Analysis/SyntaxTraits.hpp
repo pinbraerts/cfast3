@@ -7,6 +7,8 @@
 
 #include "TokenTraits.hpp"
 
+namespace cfast {
+
 enum class SyntaxType {
     End,
     Space,
@@ -46,55 +48,54 @@ template<class T>
 class SyntaxTraits {
 public:
     using char_type = typename T::char_type;
-    using Index     = typename T::Index;
     using Type      = SyntaxType;
     using TokenType = typename T::Type;
     using Token     = typename T::Token;
     using Priority  = float;
-    using View      = typename T::View;
     
 private:
     // https://en.cppreference.com/w/cpp/language/operator_precedence
-    std::map<View, Priority> priority_map {
-        { "::", 1 },
-        { ".", 2 }, { "->", 2 }, { "--", 2 }, { "++", 2 },
-        { "!", 3 }, { "~", 3 },
-        { "*", 4 }, { "/", 4 }, { "%", 4 },
-        { "+", 5 }, { "-", 5 },
-        { "<<", 6 }, { ">>", 6 },
-        { "<=>", 7 },
-        { "<", 8 }, { "<=", 8 }, { ">", 8 }, { ">=", 8 },
-        { "==", 9 }, { "!=", 9 },
-        { "&", 10 },
-        { "^", 11 },
-        { "|", 12 },
-        { "&&", 13 },
-        { "||", 14 },
-        { ",", 15 },
-        { "=", 16 }, { "+=", 16 }, { "-=", 16 },
-        { "*=", 16 }, { "/=", 16 }, { "%=", 16 },
-        { ">>=", 16 }, { "<<=", 16 },
-        { "&=", 16 }, { "|=", 16 }, { "^=", 16 },
-        { ";", 17 },
-        { "(", 0 }, { ")", 18 },
-        { "[", 0 }, { "]", 18 },
-        { "{", 0 }, { "}", 18 }
+    std::map<string_view<char_type>, Priority> priority_map {
+        { "::", 1.0f },
+        { ".", 2.0f }, { "->", 2.0f }, { "--", 2.0f }, { "++", 2.0f },
+        { "!", 3.0f }, { "~", 3.0f },
+        { "*", 4.0f }, { "/", 4.0f }, { "%", 4.0f },
+        { "+", 5.0f }, { "-", 5.0f },
+        { "<<", 6.0f }, { ">>", 6.0f },
+        { "<=>", 7.0f },
+        { "<", 8.0f }, { "<=", 8.0f }, { ">", 8.0f }, { ">=", 8.0f },
+        { "==", 9.0f }, { "!=", 9.0f },
+        { "&", 10.0f },
+        { "^", 11.0f },
+        { "|", 12.0f },
+        { "&&", 13.0f },
+        { "||", 14.0f },
+        { ",", 15.0f },
+        { "=", 16.0f }, { "+=", 16.0f }, { "-=", 16.0f },
+        { "*=", 16.0f }, { "/=", 16.0f }, { "%=", 16.0f },
+        { ">>=", 16.0f }, { "<<=", 16.0f },
+        { "&=", 16.0f }, { "|=", 16.0f }, { "^=", 16.0f },
+        { ";", 17.0f },
+        { "(", 0.0f }, { ")", 18.0f },
+        { "[", 0.0f }, { "]", 18.0f },
+        { "{", 0.0f }, { "}", 18.0f }
     };
 
 public:
     static constexpr Priority max_priority = 18, min_priority = 0;
 
-    Priority GetPriority(View src) const {
-        if (auto iter = priority_map.find(src); iter != priority_map.end())
+    Priority GetPriority(string_view<char_type> src) const {
+        auto iter = priority_map.find(src);
+        if (iter != priority_map.end())
             return iter->second;
         else return 0;
     }
 
-    static constexpr bool IsEscape(View v) {
+    static constexpr bool IsEscape(string_view<char_type> v) {
         return !v.empty() && v[0] == '\\';
     }
     
-    static constexpr bool IsClosure(View v1, View v2) {
+    static constexpr bool IsClosure(string_view<char_type> v1, string_view<char_type> v2) {
         if(v1.empty() || v2.empty())
             return false;
         
@@ -106,5 +107,7 @@ public:
         }
     }
 };
+
+} // namespace cfast
 
 #endif // !CFAST_SYNTAX_TRAITS_HPP

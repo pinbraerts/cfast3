@@ -9,14 +9,15 @@ public:
     using Type  = typename T::Type;
     
 private:
-    Type _type;
     size_t _begin, _end;
     
 public:
+    Type type;
+
     Token(): Token(Type::End) { }
-    Token(Type t): _type(t), _begin(0), _end(0) { }
-    Token(Type t, size_t b): _type(t), _begin(b), _end(b) { }
-    Token(Type t, size_t b, size_t e): _type(t), _begin(b), _end(e) { }
+    Token(Type t): type(t), _begin(0), _end(0) { }
+    Token(Type t, size_t b): type(t), _begin(b), _end(b) { }
+    Token(Type t, size_t b, size_t e): type(t), _begin(b), _end(e) { }
     Token(const Token&) = default;
     Token(Token&&) = default;
     
@@ -35,13 +36,6 @@ public:
     }
     void end(size_t v) {
         _end = v;
-    }
-    
-    Type type() const {
-        return _type;
-    }
-    void type(Type t) {
-        _type = t;
     }
     
     size_t size() const {
