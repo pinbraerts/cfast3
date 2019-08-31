@@ -1,101 +1,80 @@
 #ifndef CFAST_LEXER_HPP
 #define CFAST_LEXER_HPP
 
-#include "LexerTraits.hpp"
+#include "../Utils/Buffer.hpp"
+#include "Token.hpp"
+#include "TokenTraits.hpp"
 
-namespace cf {
+namespace cfast {
 
+template<class C,
+    class L = TokenTraits<C>,
+    class T = Token<L>>
 struct Lexer {
-private:
-	std::unique_ptr<char_type[]> _buffer;
-	LexerTraits traits;
-
-	Lexer(char_type* buffer, size_t size) noexcept: current(buffer), source(buffer, buffer + size), _buffer(buffer) {}
-
 public:
-	TextPosition current;
-	Source source;
+    // Typedefs
+    using char_type   = C;
+    using Buffer      = Buffer<char_type>;
+    using description = typename Buffer::description;
+    using pointer     = typename Buffer::pointer;
+    using Token       = T;
+    using Traits      = L;
+    using Type        = typename Traits::Type;
+    
+private:
+    Buffer& _buffer;
+    size_t _current;
+    Traits _traits;
+    
+public:
+    // Constructor
+    Lexer(
+        Buffer& buffer,
+        size_t current = 0,
+        Traits traits = Traits { }
+    ) : _buffer(buffer),
+        _current(current),
+        _traits(std::move(traits)) { }
+    
+    // Properties
+    char_type& chr() {
+        return *_buffer.get(_current);
+    }
+    Buffer& buffer() {
+        return _buffer;
+    }
+    
+    MatchResult Match(const Token& t) {
+        return _traits.Match(t.type, _buffer.span(t));
+    }
+    
+    Token Next() noexcept {
+        if (_current >= _buffer.size())
+            return Token();
 
-	Token Next() noexcept {
-		if (current >= source.end())
-			return Token::eof();
+        Token x(_traits.GetType(chr()), _current, _current);
+        x.end(++_current);
+        Token temp = x;
 
-		Token x(traits.GetType(current.chr()), current, current);
-		x.end(++current);
-		Token temp = x;
+        while (_current < _buffer.size() && x.type == _traits.GetType(chr())) {
+            temp.end(++_current);
+            switch (Match(temp)) {
+            case MatchResult::Combination:
+                x = temp;
+                break;
+            case MatchResult::Start:
+                break;
+            case MatchResult::Nothing:
+            default:
+                _current = x.end();
+                return x;
+            }
+        }
 
-		while (current < source.end() && x.type == traits.GetType(current.chr())) {
-			temp.end(++current);
-			switch (traits.Match(temp)) {
-			case LexerTraits::Combination:
-				x = temp;
-				break;
-			case LexerTraits::Start:
-				break;
-			case LexerTraits::Nothing:
-			default:
-				current = x.end();
-				return x;
-			}
-		}
-
-		return x;
-	}
-
-	static Lexer FromFile(std::string path) {
-		std::ifstream input(path);
-		if (!input) return Lexer(nullptr, 0);
-		input.ignore(std::numeric_limits<std::streamsize>::max());
-		size_t sz = input.gcount();
-		input.clear();
-		input.seekg(0, std::ios::beg);
-		char_type* buffer = new char_type[sz + 1];
-		input.read(buffer, sz);
-		buffer[sz] = '\0';
-		return Lexer(buffer, sz);
-	}
-
-	static Lexer FromString(std::string str) {
-		if (str.empty()) return Lexer(nullptr, 0);
-		char_type* buffer = new char_type[str.size() + 1];
-		str.copy(buffer, str.size());
-		buffer[str.size()] = '\0';
-		return Lexer(buffer, str.size());
-	}
-
-	struct Iter {
-		Iter(Lexer& l) noexcept: lex(l), tok(lex.Next()) {}
-		Iter(Lexer& l, Token t) noexcept: lex(l), tok(t) {}
-
-		Lexer& lex;
-		Token tok;
-
-		Iter& operator++() noexcept {
-			tok = lex.Next();
-			return *this;
-		}
-		Token* operator->() noexcept {
-			return &tok;
-		}
-		bool operator<(const Iter& other) const noexcept {
-			return tok.type != Token::End;
-		}
-		bool operator!=(const Iter& other) const noexcept {
-			return tok.type != Token::End;
-		}
-		Token& operator*() noexcept {
-			return tok;
-		}
-	};
-
-	Iter begin() noexcept {
-		return Iter(*this);
-	}
-	Iter end() noexcept {
-		return Iter(*this, Token::eof());
-	}
+        return x;
+    }
 };
 
-} // namespace cf
+} // namespace cfast
 
 #endif // !CFAST_LEXER_HPP

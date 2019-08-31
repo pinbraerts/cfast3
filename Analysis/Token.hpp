@@ -1,60 +1,51 @@
 #ifndef CFAST_TOKEN_HPP
 #define CFAST_TOKEN_HPP
 
-#include "TextPosition.hpp"
+namespace cfast {
 
-namespace cf {
+template<class T>
+struct Token {
+public:
+    using Type  = typename T::Type;
+    
+private:
+    size_t _begin, _end;
+    
+public:
+    Type type;
 
-struct Token: Source {
-	enum Type {
-		End,
-		Space,
-		Line,
-		Operator,
-		String,
-		Quote,
-		OpenBrace,
-		CloseBrace,
-		Container,
-		Error,
-	} type;
+    Token(): Token(Type::End) { }
+    Token(Type t): type(t), _begin(0), _end(0) { }
+    Token(Type t, size_t b): type(t), _begin(b), _end(b) { }
+    Token(Type t, size_t b, size_t e): type(t), _begin(b), _end(e) { }
+    Token(const Token&) = default;
+    Token(Token&&) = default;
+    
+    Token& operator=(const Token&) = default;
+    Token& operator=(Token&&) = default;
 
-	Token(Type t) noexcept: type(t) {}
-	Token(Type t, TextPosition first, TextPosition last) noexcept: type(t), Source(first, last) {}
-
-	static Token eof() noexcept {
-		return Token(Type::End);
-	}
-
-	constexpr static const char* TypeToString(Type type) {
-		switch (type) {
-		case Type::OpenBrace: case Type::CloseBrace:
-			return "Brace";
-		case Type::End: return "End";
-		case Type::Line: return "Line";
-		case Type::Operator:
-			return "Operator";
-		case Type::Quote: return "Quote";
-		case Type::Space: return "Space";
-		case Type::String: return "String";
-		case Type::Container: return "Container";
-		case Type::Error: return "Error";
-		default: return "Unknown";
-		}
-	}
-
-	void SaveBinary(std::ostream& stream) {
-		Write(stream, *this);
-	}
-	void LoadBinary(std::istream& stream) {
-		Read(stream, *this);
-	}
+    size_t begin() const {
+        return _begin;
+    }
+    void begin(size_t v) {
+        _begin = v;
+    }
+    
+    size_t end() const {
+        return _end;
+    }
+    void end(size_t v) {
+        _end = v;
+    }
+    
+    size_t size() const {
+        return _end - _begin;
+    }
+    bool empty() const {
+        return _end <= _begin;
+    }
 };
 
-std::ostream& operator<<(std::ostream& stream, const Token& token) {
-	return (stream << Token::TypeToString(token.type) << " \'").write(token.begin().ptr(), token.Size()) << '\'';
-}
-
-} // namespace cf
+} // namespace cfast
 
 #endif // !CFAST_TOKEN_HPP
