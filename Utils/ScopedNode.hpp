@@ -72,22 +72,38 @@ public:
         return get();
     }
 
+    node_type* get_child(size_t i) {
+        return get(get()->children[i]);
+    }
+    const node_type* get_child(size_t i) const {
+        return get(get()->children[i]);
+    }
+
+    node_type* operator[](size_t i) {
+        return get_child(i);
+    }
+    const node_type* operator[](size_t i) const {
+        return get_child(i);
+    }
+
     // Node flow
     template<class... Args>
     pointer Create(Args... args) {
         return _tree.CreateNode(std::forward<Args>(args)...);
     }
 
-    void Select(pointer ptr) {
+    pointer Select(pointer ptr) {
         _stack.push_back(ptr);
+        return ptr;
     }
 
-    void SelectChild(size_t offset) {
-        Select(get()->children[offset]);
+    pointer SelectChild(size_t offset) {
+        return Select(get()->children[offset]);
     }
 
-    void Push(pointer ptr) {
-        return get()->children.push_back(ptr);
+    pointer Push(pointer ptr) {
+        get()->children.push_back(ptr);
+        return ptr;
     }
 
     void GoUp() {
@@ -101,29 +117,33 @@ public:
         return true;
     }
 
+    void GoToRoot() {
+        _stack.resize(1);
+    }
+
     // Combinations
     template<class... Args>
-    void CreatePush(Args... args) {
+    pointer CreatePush(Args... args) {
         pointer ptr = Create(std::forward<Args>(args)...);
-        Push(ptr);
+        return Push(ptr);
     }
 
     template<class... Args>
-    void CreateSelect(Args... args) {
+    pointer CreateSelect(Args... args) {
         pointer ptr = Create(std::forward<Args>(args)...);
-        Select(ptr);
+        return Select(ptr);
     }
 
-    void PushSelect(pointer ptr) {
+    pointer PushSelect(pointer ptr) {
         Push(ptr);
-        Select(ptr);
+        return Select(ptr);
     }
 
     template<class... Args>
-    void CreatePushSelect(Args... args) {
+    pointer CreatePushSelect(Args... args) {
         pointer ptr = Create(std::forward<Args>(args)...);
         Push(ptr);
-        Select(ptr);
+        return Select(ptr);
     }
 
     // Properties
