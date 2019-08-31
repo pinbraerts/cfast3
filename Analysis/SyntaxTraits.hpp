@@ -49,7 +49,7 @@ public:
     using char_type  = typename T::char_type;
     using Type       = SyntaxType;
     using TokenType  = typename T::Type;
-    using token_type = typename T::token_type;
+    using Token_t    = typename T::Token_t;
     using Priority   = float;
     
 private:

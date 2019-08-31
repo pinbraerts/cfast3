@@ -19,8 +19,8 @@ public:
 
     using Syntax     = N;
     using Traits     = R;
-    using token_type = typename Syntax::token_type;
-    using TokenType  = typename token_type::Type;
+    using Token_t    = typename Syntax::Token_t;
+    using TokenType  = typename Token_t::Type;
     using Type       = typename Syntax::Type;
     using Priority   = typename Syntax::Priority;
 
@@ -35,7 +35,7 @@ public:
     
     pointer _spaces = pointer{};
     bool eat_lines = true;
-    token_type _current { };
+    Token_t _current { };
     string_view<char_type> _current_view { };
     Priority _current_priority { };
     std::basic_string<char_type> _current_error { };

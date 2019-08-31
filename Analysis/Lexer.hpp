@@ -17,7 +17,7 @@ public:
     using buffer_type = Buffer<char_type>;
     using description = typename buffer_type::description;
     using pointer     = typename buffer_type::pointer;
-    using token_type  = T;
+    using Token_t     = T;
     using Traits      = L;
     using Type        = typename Traits::Type;
     
@@ -44,17 +44,17 @@ public:
         return _buffer;
     }
     
-    MatchResult Match(const token_type& t) {
+    MatchResult Match(const Token_t& t) {
         return _traits.Match(t.type, _buffer.span(t));
     }
     
-    token_type Next() noexcept {
+    Token_t Next() noexcept {
         if (_current >= _buffer.size())
-            return token_type();
+            return Token_t();
 
-        token_type x(_traits.GetType(chr()), _current, _current);
+        Token_t x(_traits.GetType(chr()), _current, _current);
         x.end(++_current);
-        token_type temp = x;
+        Token_t temp = x;
 
         while (_current < _buffer.size() && x.type == _traits.GetType(chr())) {
             temp.end(++_current);

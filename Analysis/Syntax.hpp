@@ -8,12 +8,12 @@ namespace cfast {
 template<class R>
 class Syntax: public Token<R> {
 public:
-    using base       = Token<R>;
-    using Traits     = R;
+    using base      = Token<R>;
+    using Traits    = R;
+    using TokenType = typename Traits::TokenType;
+    using Token_t   = typename Traits::Token_t;
+    using Priority  = typename Traits::Priority;
     using typename base::Type;
-    using TokenType  = typename Traits::TokenType;
-    using token_type = typename Traits::token_type;
-    using Priority   = typename Traits::Priority;
 
     using base::base;
     using base::type;
@@ -26,8 +26,8 @@ public:
     Syntax(Type t): base(t), priority(0) { }
     Syntax(Type t, Priority p): base(t), priority(p) { }
     
-    Syntax(token_type t): base((Type)(size_t)t.type, t.begin(), t.end()), priority(0) { }
-    Syntax(token_type t, Priority p): base((Type)(size_t)t.type, t.begin(), t.end()), priority(p) { }
+    Syntax(Token_t t): base((Type)(size_t)t.type, t.begin(), t.end()), priority(0) { }
+    Syntax(Token_t t, Priority p): base((Type)(size_t)t.type, t.begin(), t.end()), priority(p) { }
 
     operator base&() {
         return *this;
