@@ -2,7 +2,10 @@
 #define CFAST_LEXER_TRAITS_HPP
 
 #include <set>
-#include <string_view>
+
+#include "../Utils/defines.hpp"
+
+namespace cfast {
 
 enum class MatchResult {
     Nothing,
@@ -21,25 +24,24 @@ enum class TokenType {
     CloseBrace,
 };
 
-constexpr std::string_view ToString(TokenType t) {
+constexpr const char* ToString(TokenType t) {
     switch(t) {
-    case TokenType::End: return "EOF";
-    case TokenType::Space: return "Space";
-    case TokenType::Line: return "Line";
-    case TokenType::Operator: return "Operator";
-    case TokenType::String: return "String";
-    case TokenType::Quote: return "Quote";
-    case TokenType::OpenBrace: return "OpenBrace";
+    case TokenType::End:        return "EOF";
+    case TokenType::Space:      return "Space";
+    case TokenType::Line:       return "Line";
+    case TokenType::Operator:   return "Operator";
+    case TokenType::String:     return "String";
+    case TokenType::Quote:      return "Quote";
+    case TokenType::OpenBrace:  return "OpenBrace";
     case TokenType::CloseBrace: return "CloseBrace";
-    default: return "Error!";
+    default:                    return "Error!";
     }
 }
 
-template<class B>
+template<class C>
 struct TokenTraits {
-    using char_type = typename B::char_type;
-    using Index = typename B::Index;
-    using Type = TokenType;
+    using char_type = C;
+    using Type      = TokenType;
     
     Type GetType(char_type chr) noexcept {
         switch (chr) {
@@ -79,7 +81,7 @@ struct TokenTraits {
         }
    }
 
-    std::set<std::string_view> possible_combinations {
+    std::set<string_view<char_type>> possible_combinations {
         "::", "->",
         "--", "++",
         "<<", ">>",
@@ -88,7 +90,7 @@ struct TokenTraits {
         "+=", "-=", "*=", "/=", "%=", ">>=", "<<=", "&=", "|=", "^="
     };
 
-    MatchResult Match(Type t, std::string_view s) {
+    MatchResult Match(Type t, string_view<char_type> s) {
         if (t == Type::String)
             return MatchResult::Combination;
         if (t == Type::Space)
@@ -96,12 +98,14 @@ struct TokenTraits {
         auto iter = possible_combinations.lower_bound(s);
         if (iter == possible_combinations.end())
             return MatchResult::Nothing;
-        std::string_view s2 (*iter);
+        string_view<char_type> s2 (*iter);
         if (s2.find_first_of(s) == 0) {
             return s2.size() == s.size() ? MatchResult::Combination : MatchResult::Start;
         }
         return MatchResult::Nothing;
     }
 };
+
+} // namespace cfast
 
 #endif // !CFAST_LEXER_TRAITS_HPP

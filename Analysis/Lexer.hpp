@@ -1,54 +1,51 @@
 #ifndef CFAST_LEXER_HPP
 #define CFAST_LEXER_HPP
 
-#include <string_view>
-
-#include "Buffer.hpp"
+#include "../Utils/Buffer.hpp"
 #include "Token.hpp"
 #include "TokenTraits.hpp"
 
+namespace cfast {
+
 template<class C,
-    class B = Buffer<C>,
-    class L = TokenTraits<B>,
+    class L = TokenTraits<C>,
     class T = Token<L>>
 struct Lexer {
 public:
-    using Buffer = B;
-    using char_type = typename Buffer::char_type;
-    using pointer = typename Buffer::pointer;
-    using Raw = typename Buffer::Raw;
-    using Index = typename Buffer::Index;
-    using Position = typename Buffer::Position;
-    using Token = T;
-    using Traits = L;
-    using Type = typename Traits::Type;
-    using View = std::basic_string_view<char_type>;
+    // Typedefs
+    using char_type   = C;
+    using Buffer      = Buffer<char_type>;
+    using description = typename Buffer::description;
+    using pointer     = typename Buffer::pointer;
+    using Token       = T;
+    using Traits      = L;
+    using Type        = typename Traits::Type;
     
 private:
     Buffer& _buffer;
-    Index _current;
+    size_t _current;
     Traits _traits;
     
 public:
+    // Constructor
     Lexer(
         Buffer& buffer,
-        Index current = 0,
+        size_t current = 0,
         Traits traits = Traits { }
     ) : _buffer(buffer),
         _current(current),
         _traits(std::move(traits)) { }
     
+    // Properties
     char_type& chr() {
         return *_buffer.get(_current);
     }
-    
-    template<class U>
-    View view(const U& t) {
-        return View(_buffer.get(t.begin()), t.size());
+    Buffer& buffer() {
+        return _buffer;
     }
     
     MatchResult Match(const Token& t) {
-        return _traits.Match(t.type(), view(t));
+        return _traits.Match(t.type(), _buffer.span(t));
     }
     
     Token Next() noexcept {
@@ -78,14 +75,6 @@ public:
     }
 };
 
-void TestLexer() {
-    auto b = Buffer<char>::FromFile("Lexer.hpp");
-    Lexer<char> l(b);
-    using L = Lexer<char>;
-    L::Token t = l.Next();
-    for(; t.type() != L::Traits::Type::End; t = l.Next()) {
-        std::cout << ToString(t.type()) << ' ' << '\'' << l.view(t) << '\'' << std::endl;
-    }
-}
+} // namespace cfast
 
 #endif // !CFAST_LEXER_HPP

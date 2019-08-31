@@ -6,16 +6,17 @@
 template<class R>
 class Syntax: public Token<R> {
 public:
-    using base = Token<R>;
+    using base      = Token<R>;
+    using Type      = typename base::Type;
+    using Index     = typename base::Index;
+    using TokenType = typename R::TokenType;
+    using Token     = typename R::Token;
+    using Priority  = typename R::Priority;
+
     using base::base;
     using base::type;
     using base::begin;
     using base::end;
-    using Type = typename base::Type;
-    using Index = typename base::Index;
-    using TokenType = typename R::TokenType;
-    using Token = typename R::Token;
-    using Priority = typename R::Priority;
     
     Priority priority;
 
@@ -25,16 +26,6 @@ public:
     
     Syntax(Token t): base((Type)(size_t)t.type(), t.begin(), t.end()), priority(0) { }
     Syntax(Token t, Priority p): base((Type)(size_t)t.type(), t.begin(), t.end()), priority(p) { }
-    
-    /*using base::operator=;*/
-    
-    /*Syntax& operator=(Token t) {
-        type((Type)(size_t)t.type());
-        begin(t.begin());
-        end(t.end());
-        priority = 0;
-        return *this;
-    }*/
     
     operator base&() {
         return *this;

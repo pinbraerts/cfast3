@@ -1,38 +1,39 @@
 #ifndef CFAST_TOKEN_HPP
 #define CFAST_TOKEN_HPP
 
+namespace cfast {
+
 template<class T>
 struct Token {
 public:
-    using Index = typename T::Index;
-    using Type = typename T::Type;
+    using Type  = typename T::Type;
     
 private:
     Type _type;
-    Index _begin, _end;
+    size_t _begin, _end;
     
 public:
     Token(): Token(Type::End) { }
     Token(Type t): _type(t), _begin(0), _end(0) { }
-    Token(Type t, Index b): _type(t), _begin(b), _end(b) { }
-    Token(Type t, Index b, Index e): _type(t), _begin(b), _end(e) { }
+    Token(Type t, size_t b): _type(t), _begin(b), _end(b) { }
+    Token(Type t, size_t b, size_t e): _type(t), _begin(b), _end(e) { }
     Token(const Token&) = default;
     Token(Token&&) = default;
     
     Token& operator=(const Token&) = default;
     Token& operator=(Token&&) = default;
 
-    Index begin() const {
+    size_t begin() const {
         return _begin;
     }
-    void begin(Index v) {
+    void begin(size_t v) {
         _begin = v;
     }
     
-    Index end() const {
+    size_t end() const {
         return _end;
     }
-    void end(Index v) {
+    void end(size_t v) {
         _end = v;
     }
     
@@ -50,5 +51,7 @@ public:
         return _end <= _begin;
     }
 };
+
+} // namespace cfast
 
 #endif // !CFAST_TOKEN_HPP

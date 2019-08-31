@@ -23,22 +23,22 @@ enum class SyntaxType {
     ContainerBrace,
 };
 
-constexpr std::string_view ToString(SyntaxType t) {
+constexpr const char* ToString(SyntaxType t) {
     switch(t) {
-    case SyntaxType::End: return "EOF";
-    case SyntaxType::Space: return "Space";
-    case SyntaxType::Line: return "Line";
-    case SyntaxType::Operator: return "Operator";
-    case SyntaxType::String: return "String";
-    case SyntaxType::Quote: return "Quote";
-    case SyntaxType::OpenBrace: return "OpenBrace";
-    case SyntaxType::CloseBrace: return "CloseBrace";
-    case SyntaxType::ContainerSpace: return "Container Space";
-    case SyntaxType::ContainerString: return "Container String";
+    case SyntaxType::End:               return "EOF";
+    case SyntaxType::Space:             return "Space";
+    case SyntaxType::Line:              return "Line";
+    case SyntaxType::Operator:          return "Operator";
+    case SyntaxType::String:            return "String";
+    case SyntaxType::Quote:             return "Quote";
+    case SyntaxType::OpenBrace:         return "OpenBrace";
+    case SyntaxType::CloseBrace:        return "CloseBrace";
+    case SyntaxType::ContainerSpace:    return "Container Space";
+    case SyntaxType::ContainerString:   return "Container String";
     case SyntaxType::ContainerOperator: return "Container Operator";
-    case SyntaxType::ContainerQuote: return "Container Quote";
-    case SyntaxType::ContainerBrace: return "Container Brace";
-    default: return "Error!";
+    case SyntaxType::ContainerQuote:    return "Container Quote";
+    case SyntaxType::ContainerBrace:    return "Container Brace";
+    default:                            return "Error!";
     }
 }
 
@@ -46,12 +46,12 @@ template<class T>
 class SyntaxTraits {
 public:
     using char_type = typename T::char_type;
-    using Index = typename T::Index;
-    using Type = SyntaxType;
+    using Index     = typename T::Index;
+    using Type      = SyntaxType;
     using TokenType = typename T::Type;
-    using Token = typename T::Token;
-    using Priority = float;
-    using View = typename T::View;
+    using Token     = typename T::Token;
+    using Priority  = float;
+    using View      = typename T::View;
     
 private:
     // https://en.cppreference.com/w/cpp/language/operator_precedence
